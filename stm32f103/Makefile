@@ -13,7 +13,7 @@ NM                         = $(CROSS)nm
 
 #----------------------------------------------------------
 MCU 						= STM32F103C8
-TARGET_NAME                 = rf_controller
+TARGET_NAME                 = stm32_template
 #----------------------------------------------------------
 BUILD_DIR                   = build
 OUTPUT_DIR                  = output
