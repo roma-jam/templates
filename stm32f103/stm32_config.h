@@ -33,7 +33,7 @@
 //save few bytes here
 #define STM32_DECODE_RESET                      0
 //0 meaning HSI. If not defined, 25MHz will be defined by default by ST lib
-#define HSE_VALUE                               0
+#define HSE_VALUE                               8000000
 // HSE_RTC_DIV used for getting 1 MHz (or lower) clock frequency for RTC on SMT32L1.
 #define HSE_RTC_DIV                             0
 
