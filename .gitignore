@@ -1,2 +1,4 @@
 stm32f103/build/
 stm32f103/output/rf_controller.bin
+stm32f103_baremetal/output/
+stm32f103_baremetal/build/
