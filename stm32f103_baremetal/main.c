@@ -14,8 +14,10 @@
 #include "dbg.h"
 #endif
 
+
 void main(void)
 {
+    uint8_t c = 15;
     SYSTEM system;
     system.reboot = false;
     board_init();
@@ -31,8 +33,13 @@ void main(void)
     gpio_enable(C13, GPIO_MODE_OUT);
     pin_reset(C13);
 
+//    printf("%#x\n", c);
+
     while(!system.reboot)
     {
+        printf("c addr, %#X\n", &c);
+        printf("%#x\n", c++);
+//        printf("%#x\n", c);
         printf("LED blink\n");
         delay_ms(500);
         if(pin_get(C13))
