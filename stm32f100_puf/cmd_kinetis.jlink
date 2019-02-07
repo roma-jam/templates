@@ -1,0 +1,9 @@
+device MK22FN256xxx12
+si 1
+speed 4000
+r
+h
+loadbin output/puf_MK22FN256VLH12.bin, 0x0
+verifybin output/puf_MK22FN256VLH12.bin, 0x0
+r
+q

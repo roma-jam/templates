@@ -1,0 +1,7 @@
+si 1
+speed 4000
+r
+h
+loadbin output/jc-recovery_LPC1837JET100.bin,0x1A000000
+verifybin output/jc-recovery_LPC1837JET100.bin,0x1A000000
+q
