@@ -47,7 +47,7 @@ SRC_C						+= board.c crc.c
 SRC_C                       += main.c 
 SRC_C 						+= dbg.c printf.c 
 
-SRC_C						+= flash.c storage.c flash_update_test.c
+SRC_C						+= flash.c storage.c flash_update.c
 
 OBJ                         = $(SRC_AS:%.S=%.o) $(SRC_C:%.c=%.o)
 #----------------------------------------------------------

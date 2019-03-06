@@ -27,6 +27,8 @@
 #include "usb.h"
 #endif // USB_ENABLE
 
+extern unsigned int __ETEXT[];
+
 //main
 extern void board_init();
 extern void board_reset();

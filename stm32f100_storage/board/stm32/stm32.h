@@ -428,6 +428,7 @@
 #endif //64k CL
 
 #if defined(STM32F100CB) || defined(STM32F100RB) || defined(STM32F100VB)
+#define FLASH_PAGE_SIZE   0x400
 #define FLASH_SIZE        0x20000
 #define STM32F10X_MD_VL
 #endif //128k MD_VL

@@ -9,6 +9,8 @@
 #define STORAGE_H_
 
 #include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include "config.h"
 
 #if (SYS_DEBUG)
@@ -17,14 +19,17 @@
 
 
 #if (STORAGE_DEBUG)
+#define STORAGE_DEBUG_INFO                      1
 #define STORAGE_DEBUG_REQUEST                   1
+#define STORAGE_DEBUG_ERRORS                    1
 #endif // STORAGE_DEBUG
 
+#define STORAGE_ENTRY_MAGIC                     0xA324EACB
 
 /* PRIMITIVES */
-typedef void (*MEMORY_INIT)();
-typedef void (*MEMORY_READ)(const void*, void*, unsigned int);
-typedef void (*MEMORY_WRITE)(const void*, void*, unsigned int);
+typedef void (*MEMORY_INIT)(void* ctx);
+typedef int (*MEMORY_READ)(void* ctx, void*, unsigned int, unsigned int);
+typedef int (*MEMORY_WRITE)(void* ctx, unsigned int, void*, unsigned int);
 
 typedef struct {
     MEMORY_INIT     init;
@@ -34,19 +39,39 @@ typedef struct {
 
 /* PROTOTYPES */
 typedef struct {
+    /* create stack due to absent primitives function and ao not exceed ram during working */
+    uint8_t stack[2048];
+    void* mem_ctx;
     const MEMORY_FUNCTIONS_STRUCT* memory;
     unsigned int offset;
+    unsigned int max_size;
+    unsigned int page_size;
     unsigned int cluster_size;
-
+    unsigned int total_clusters;
 } STORAGE;
+
+#pragma pack(push, 1)
+typedef struct {
+    uint32_t magic;
+    uint32_t max_size;
+    uint32_t page_size;
+    uint32_t cluster_size;
+    uint32_t total_clusters;
+    uint32_t crc32;
+} STORAGE_ENTRY_PAGE;
+#pragma pack(pop)
 
 typedef struct {
     unsigned int total_clusters;
     unsigned int free_clusters;
 } STORAGE_INFO;
 
-void storage_init(STORAGE* storage);
-void storage_open(STORAGE* storage);
+bool storage_create(STORAGE* storage,
+                    unsigned int offset,
+                    unsigned int max_size,
+                    unsigned int page_size,
+                    unsigned int cluster_size);
+bool storage_open(STORAGE* storage, unsigned int offset, unsigned int max_size);
 void storage_close(STORAGE* storage);
 void storage_get_info(STORAGE* storage, STORAGE_INFO* info);
 

@@ -14,7 +14,7 @@
 #include "dbg.h"
 #endif // SYS_DEBUG
 
-#include "flash_update_test.h"
+#include "flash_update.h"
 
 /* divercify key */
 void main()
@@ -27,19 +27,21 @@ void main()
     printf("%s core, %d MHz\n", __MCU, power_get_core_clock() / 1000000);
 #endif // SYS_DEBUG
 
-
-    delay_ms(2000);
-
     STORAGE storage;
+    MEMORY_CTX mem_ctx;
+
     /* memory init, read, write functions */
     storage.memory = &__MEMORY_FLASH;
-    /* offset */
-    storage.offset = FLASH_BASE + (64 * 1024);
-    /* cluster size in bytes */
-    storage.cluster_size = 128;
+    /* memory context */
+    storage.mem_ctx = &mem_ctx;
 
-    storage_open(&storage);
+    storage_open(&storage, (unsigned int)&__ETEXT, FLASH_BASE + FLASH_SIZE);
 
+    // for creation
+    //storage_create(&storage, FLASH_BASE + (64 * 1024), FLASH_BASE + FLASH_SIZE, FLASH_PAGE_SIZE, 128);
+
+    /* FLASH WRITE FUNCTION TEST */
+#if 0
     uint8_t temp1[32] =
     {
         0x5B, 0x28, 0xDD, 0xFF, 0xE5, 0x57, 0x1B, 0x16,
@@ -56,11 +58,22 @@ void main()
         0x00, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00,
     };
 
+    uint8_t verify[32] = {0};
+
     printf("flash program %#X ...", storage.offset);
-
-    flash_update(storage.offset, (unsigned int)temp1, 1, false);
-
+    storage.memory->init(storage.mem_ctx);
+    storage.memory->write(storage.mem_ctx, storage.offset, temp1, 32);
     printf("complete.\n", storage.offset);
+
+    storage.memory->read(storage.mem_ctx, verify, storage.offset, 32);
+
+    printf("read: ");
+    for(int i = 0; i < 32; i++)
+        printf("%02X ", verify[i]);
+    printf("\n");
+
+    printf((0 == memcmp(verify, temp1, 32))? "write OK.\n" : "write FAILURE.\n");
+#endif // FLASH WRITE FUNCTION TEST
 
     while(1);
 }

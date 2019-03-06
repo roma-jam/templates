@@ -11,21 +11,94 @@
 #include "dbg.h"
 #endif // STORAGE_DEBUG
 
-void storage_init(STORAGE* storage)
+bool storage_create(STORAGE* storage,
+                    unsigned int offset,
+                    unsigned int max_size,
+                    unsigned int page_size,
+                    unsigned int cluster_size)
 {
-#if (STORAGE_DEBUG_REQUEST)
-    printf("STORAGE: init\n");
-#endif // STORAGE_DEBUG_REQUEST
-    /* create entry by offset */
+    STORAGE_ENTRY_PAGE* entry = (STORAGE_ENTRY_PAGE*)storage->stack;
+    unsigned int total_clusters = 0;
+    int res = 0;
 
+    /* count cluster count */
+    total_clusters = (max_size - offset) / cluster_size;
+
+    /* create entry by offset */
+    entry->magic = STORAGE_ENTRY_MAGIC;
+    entry->max_size = max_size;
+    entry->page_size = page_size;
+    entry->cluster_size = cluster_size;
+    entry->total_clusters = total_clusters;
+
+    /* count CRC32 */
+    // TODO
+
+    storage->memory->init(storage->mem_ctx);
+    /* write entry to flash */
+    res = storage->memory->write(storage->mem_ctx, offset, storage->stack, sizeof(STORAGE_ENTRY_PAGE));
+
+    if(res < 0)
+    {
+#if (STORAGE_DEBUG_ERRORS)
+        printf("STORAGE: write entry failure\n");
+#endif // STORAGE_DEBUG_ERRORS
+        return false;
+    }
+
+#if (STORAGE_DEBUG_REQUEST)
+    printf("STORAGE: create\n");
+    printf("offset: %#X\n", offset);
+    printf("max_size: %#X\n", entry->max_size);
+    printf("page_size: %#X\n", entry->page_size);
+    printf("cluster_size: %#X\n", entry->cluster_size);
+    printf("total_clusters: %#X\n", entry->total_clusters);
+#endif // STORAGE_DEBUG_REQUEST
+    return true;
 }
 
-void storage_open(STORAGE* storage)
+bool storage_open(STORAGE* storage, unsigned int offset, unsigned int max_size)
 {
+    unsigned int addr = offset;
+    STORAGE_ENTRY_PAGE* entry = NULL;
 #if (STORAGE_DEBUG_REQUEST)
-    printf("STORAGE: open\n");
+    printf("STORAGE: open offset %#X, size %#X\n", offset, max_size);
 #endif // STORAGE_DEBUG_REQUEST
-    /* try to find entry */
+
+    /* try to find entry page */
+    for(; addr < max_size - sizeof(uint32_t); addr += sizeof(uint32_t))
+    {
+        if(STORAGE_ENTRY_MAGIC == (*(uint32_t*)addr))
+        {
+            /* init memory context */
+            storage->memory->init(storage->mem_ctx);
+            /* magic already correct */
+            entry = (STORAGE_ENTRY_PAGE*)addr;
+
+            /* verify CRC32 */
+            // TODO:
+
+            /* fill structure */
+            storage->offset = addr;
+            storage->max_size = entry->max_size;
+            storage->page_size = entry->page_size;
+            storage->cluster_size = entry->cluster_size;
+            storage->total_clusters = entry->total_clusters;
+#if (STORAGE_DEBUG_INFO)
+            printf("STORAGE: magic found\n");
+            printf("offset: %#X\n", storage->offset);
+            printf("max_size: %#X\n", storage->max_size);
+            printf("page_size: %#X\n", storage->page_size);
+            printf("cluster_size: %#X\n", storage->cluster_size);
+            printf("total_clusters: %#X\n", storage->total_clusters);
+#endif // STORAGE_DEBUG_INFO
+            return true;
+        }
+    }
+#if (STORAGE_DEBUG_ERRORS)
+    printf("STORAGE: magic not found\n");
+#endif // STORAGE_DEBUG_ERRORS
+    return false;
 
 }
 
@@ -92,3 +165,4 @@ void storage_revert(STORAGE* storage)
     printf("STORAGE: revert\n");
 #endif // STORAGE_DEBUG_REQUEST
 }
+
