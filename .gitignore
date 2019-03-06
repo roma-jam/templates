@@ -4,3 +4,9 @@ stm32f103_baremetal/output/
 stm32f103_baremetal/build/
 stm32f100_puf/build/
 stm32f100_puf/output/
+stm32f100_storage/.settings/
+stm32f100_storage/build/
+stm32f100_storage/output/puf_MK22FN256VLH12.bin
+stm32f100_storage/output/puf_MK22FN256VLH12.hex
+*.bin
+stm32f100_storage/output/
