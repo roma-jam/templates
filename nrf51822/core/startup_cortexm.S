@@ -100,7 +100,8 @@ Reset_Handler:
     ldr r0, =SP_PTR
     mov sp, r0
 
-    @all interrupts are disabled
+    @enable interrupts
+    cpsie i
     bl     main
     @never reach
     b      .
@@ -146,10 +147,16 @@ loop_us:
 2:
 .endm
 
-        .thumb_func
+    .thumb_func
 HardFault_Handler:
     @exception_enter
     b   on_hard_fault
+
+    .thumb_func
+irq_handler:
+    mrs   r0, ipsr
+    subs  r0, r0, #16
+    b     irq
 
 #if defined(CORTEX_M3) || defined(CORTEX_M4)
     .thumb_func

@@ -35,6 +35,7 @@ void board_dbg_init()
 void board_dbg(const char *const buf, unsigned int size)
 {
     int i;
+    __disable_irq();
     for(i = 0; i < size; ++i)
     {
         NRF_UART0->TXD = buf[i];
@@ -43,6 +44,6 @@ void board_dbg(const char *const buf, unsigned int size)
         /* clear flag */
         NRF_UART0->EVENTS_TXDRDY = 0;
         /* send new data */
-
     }
+    __enable_irq();
 }

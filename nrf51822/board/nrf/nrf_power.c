@@ -8,59 +8,105 @@
 #include "nrf.h"
 #include "nrf_power.h"
 
+#include "dbg.h"
 
-/** Define the source of the LF Clock. Used in @ref lfclk_init. */
-#define SRC_LFCLK                   CLOCK_LFCLKSRC_SRC_Synth
-/** HFCLK frequency in Hertz, constant of 16 MHz. */
-#define HFCLK_FREQUENCY             (16000000UL)
-/** LFCLK frequency in Hertz, constant of 32.768 kHz. */
-#define LFCLK_FREQUENCY             (32768UL)
+/* Internal RC generator frequency */
+#define HFCLK_RC_FREQ           16000000
+
+static inline void hfclk_start()
+{
+    /* HSE already run */
+    if (NRF_CLOCK->HFCLKSTAT & CLOCK_HFCLKSTAT_SRC_Xtal)
+        return;
+
+    /* interupt settings */
+    NRF_CLOCK->INTENSET = CLOCK_INTENSET_HFCLKSTARTED_Msk; // no need here
+
+    /* Enable wake-up on event */
+    SCB->SCR |= SCB_SCR_SEVONPEND_Msk;
+
+    /* flush event status */
+    NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
+    /* start HFCLK */
+    NRF_CLOCK->TASKS_HFCLKSTART = 1;
+    /* wait for the external oscillator to start up */
+    while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
+
+    /* Clear the event and the pending interrupt */
+    NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
+
+    NVIC_ClearPendingIRQ(POWER_CLOCK_IRQn);
+    NRF_CLOCK->INTENSET = 0;
+}
+
+static inline void hfclk_stop()
+{
+    /* stop HFCLK */
+    NRF_CLOCK->TASKS_HFCLKSTOP = 1;
+}
+
+static inline void lfclk_start()
+{
+    if(NRF_CLOCK->LFCLKSTAT & CLOCK_LFCLKSTAT_STATE_Running)
+        return;
+
+    /* set source */
+    NRF_CLOCK->LFCLKSRC = (LFCLK_SOURCE << CLOCK_LFCLKSRC_SRC_Pos);
+
+    /* interupt settings */
+//    NRF_CLOCK->INTENSET = CLOCK_INTENSET_LFCLKSTARTED_Msk;
+
+    /* enable wake-up on event */
+    SCB->SCR |= SCB_SCR_SEVONPEND_Msk;
+
+    /* flush event status */
+    NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+    /* start LFCLK */
+    NRF_CLOCK->TASKS_LFCLKSTART = 1;
+
+    /* Wait for the external oscillator to start up. */
+    while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0);
+
+    /* Clear the event and the pending interrupt */
+    NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+
+//    NVIC_ClearPendingIRQ(POWER_CLOCK_IRQn);
+//    NRF_CLOCK->INTENSET = 0;
+}
+
+static inline void lfclk_stop()
+{
+    /* stop LFCLK */
+    NRF_CLOCK->TASKS_LFCLKSTOP = 1;
+}
 
 void power_init()
 {
-    /* Check if 16 MHz crystal oscillator is already running. */
-    if (!(NRF_CLOCK->HFCLKSTAT & CLOCK_HFCLKSTAT_SRC_Xtal))
-    {
-        NRF_CLOCK->INTENSET = CLOCK_INTENSET_HFCLKSTARTED_Msk;
-        // Enable wake-up on event
-        SCB->SCR |= SCB_SCR_SEVONPEND_Msk;
+    hfclk_start();
 
-        NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
-        NRF_CLOCK->TASKS_HFCLKSTART = 1;
-        /* Wait for the external oscillator to start up. */
-        while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
-        /* Clear the event and the pending interrupt */
-        NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
-        NVIC_ClearPendingIRQ(POWER_CLOCK_IRQn);
-        NRF_CLOCK->INTENSET = 0;
-    }
-
-    if(!(NRF_CLOCK->LFCLKSTAT & CLOCK_LFCLKSTAT_STATE_Running))
-    {
-      NRF_CLOCK->LFCLKSRC = (SRC_LFCLK << CLOCK_LFCLKSRC_SRC_Pos);
-
-      NRF_CLOCK->INTENSET = CLOCK_INTENSET_LFCLKSTARTED_Msk;
-      // Enable wake-up on event
-      SCB->SCR |= SCB_SCR_SEVONPEND_Msk;
-
-      NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
-      NRF_CLOCK->TASKS_LFCLKSTART = 1;
-      /* Wait for the external oscillator to start up. */
-      while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0);
-      /* Clear the event and the pending interrupt */
-      NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
-      NVIC_ClearPendingIRQ(POWER_CLOCK_IRQn);
-      NRF_CLOCK->INTENSET = 0;
-    }
-}
-
-unsigned int power_get_clock(POWER_CLOCK_TYPE clock_type)
-{
-
+#if (LFCLK)
+    lfclk_start();
+#endif // LFCLK
 }
 
 unsigned int power_get_core_clock()
 {
+    /* External 16MHz/32MHz crystal oscillator */
+    if(NRF_CLOCK->HFCLKSTAT & CLOCK_HFCLKSTAT_SRC_Xtal)
+    {
+        /* return the value of HFCLK */
+        // TODO: verify NRF_CLOCK->XTALFREQ
+#if (HFCLK)
+        return HFCLK;
+#else
+        return HFCLK_RC_FREQ;
+#endif // HFCLK
+    }
 
+    if(NRF_CLOCK->HFCLKSTAT & CLOCK_HFCLKSTAT_SRC_RC)
+        return HFCLK_RC_FREQ;
+
+    /* dummy return - always on RC */
+    return HFCLK_RC_FREQ;
 }
 

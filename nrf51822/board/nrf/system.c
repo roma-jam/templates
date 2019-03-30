@@ -6,7 +6,8 @@
  */
 
 #include "nrf.h"
-#include "../config.h"
+#include "config.h"
+#include "board.h"
 
 #if (DFU_DEBUG)
 #include "../dbg.h"
@@ -50,10 +51,16 @@ void on_usage_fault()
     while(1);
 }
 
-void irq_handler()
+void irq(int vector)
 {
+    if(RADIO_IRQn == vector)
+    {
+        RADIO_IRQHandler();
+        return;
+    }
+
 #if (DFU_DEBUG)
-    printf("IRQ stub\n");
+    printf("IRQ stub, %d\n", vector);
 #endif // CPU_DEBUG
     while(1);
 }
