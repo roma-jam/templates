@@ -1,0 +1,8 @@
+﻿1) Подключение к микроконтроллеру
+openocd -f interface/cmsis-dap.cfg -f target/nrf51.cfg -c "init" -c "flash probe 0" -c "exit"
+
+2) Программирование
+openocd -f nrf5182.cfg -c "init" -c "flash probe 0" -c "exit"
+
+3) https://github.com/EarthLord/nrf51AdvLogger
+
