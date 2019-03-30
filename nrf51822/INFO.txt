@@ -1,8 +1,9 @@
-﻿1) Подключение к микроконтроллеру
-openocd -f interface/cmsis-dap.cfg -f target/nrf51.cfg -c "init" -c "flash probe 0" -c "exit"
+﻿1) Connect to device. Touch MCU
+$ openocd -f interface/cmsis-dap.cfg -f target/nrf51.cfg -c "init" -c "flash probe 0" -c "exit"
 
-2) Программирование
-openocd -f nrf5182.cfg -c "init" -c "flash probe 0" -c "exit"
+2) Read memory
+$ openocd -f interface/cmsis-dap.cfg -f target/nrf51.cfg -c "init" -c "halt" -c "flash probe 0" -c "mdw 0x0 0x100" -c "exit 0x0"
 
-3) https://github.com/EarthLord/nrf51AdvLogger
+3) Template project https://github.com/EarthLord/nrf51AdvLogger
 
+4) Program data

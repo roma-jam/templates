@@ -11,7 +11,7 @@
 
 void board_init()
 {
-    power_init(); // comment for decrease size
+//    power_init(); // comment for decrease size
 }
 
 void board_reset()

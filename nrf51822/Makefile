@@ -14,7 +14,7 @@ OBJDUMP                    = $(CROSS)objdump
 NM                         = $(CROSS)nm
 
 #----------------------------------------------------------
-MCU                         = NRF51822QFAC
+MCU                         = NRF51822QFAA
 
 LIB_FOLDER 					= NRF51
 
@@ -82,7 +82,11 @@ all: $(TARGET_NAME).elf
 	@$(GCC) $(INCLUDES) -I. $(DEFINES) -c -x assembler-with-cpp ./$< -o $(BUILD_DIR)/$@
 
 program:
-	@openocd -f nrf51822.cfg -c "init" -c "flash probe 0" -c "exit"
+#	@openocd -f nrf51822.cfg -c "init" -c "flash probe 0" -c "exit"
+	@openocd -f nrf51822.cfg -c "program $(OUTPUT_DIR)/$(TARGET_NAME).bin 0x00000000" -c "reset" -c "exit 0x0"
+	
+reset:
+	@openocd -f nrf51822.cfg -c "init" -c "reset" -c "exit 0x0"
 
 clean:
 	@echo '-----------------------------------------------------------'
@@ -91,4 +95,4 @@ clean:
 test:
 	@echo $(VPATH)
 
-.PHONY : all clean program flash
+.PHONY : all clean program reset

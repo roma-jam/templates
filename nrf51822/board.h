@@ -15,7 +15,7 @@
 
 #if defined(NRF51)
 #include "board/nrf/nrf_power.h"
-//#include "board/nrf/nrf_pin.h"
+#include "board/nrf/nrf_pin.h"
 #endif
 
 //main
