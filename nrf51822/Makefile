@@ -82,7 +82,7 @@ all: $(TARGET_NAME).elf
 	@$(GCC) $(INCLUDES) -I. $(DEFINES) -c -x assembler-with-cpp ./$< -o $(BUILD_DIR)/$@
 
 program:
-	openocd -f nrf51822.cfg -c "init" -c "flash probe 0" -c "exit"
+	@openocd -f nrf51822.cfg -c "init" -c "flash probe 0" -c "exit"
 
 clean:
 	@echo '-----------------------------------------------------------'

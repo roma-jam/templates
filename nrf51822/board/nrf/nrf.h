@@ -59,25 +59,36 @@
 
 #endif // NRF52822AA || NRF52822AB || NRF52822AC
 
-/* Family selection for main includes. NRF51 must be selected. */
-#if defined(NRF51)
-    #include "nrf51.h"
-    #include "nrf51_bitfields.h"
-    #include "nrf51_deprecated.h"
-#elif defined(NRF52)
-	#include "nrf52.h"
-#else
-    #error "Device family not defined."
-#endif /* NRF51 */
-
 #if defined(NRF51) || defined(NRF52)
+#ifndef CORTEX_M0
+#define CORTEX_M0
+
 #ifndef FLASH_BASE
 #define FLASH_BASE                0x00000000
 #endif
 #endif // NRF51 || NRF52
 
+#if !defined(LDS) && !defined(__ASSEMBLER__)
+
+/* Family selection for main includes. NRF51 must be selected. */
 #if defined(NRF51)
+
+#undef SRAM_BASE
+#undef FLASH_BASE
+
 #include "nrf51_config.h"
-#endif // NRF51
+
+#include "nrf51.h"
+#include "nrf51_bitfields.h"
+#include "nrf51_deprecated.h"
+#elif defined(NRF52)
+#include "nrf52.h"
+#else
+#error "Device family not defined."
+#endif /* NRF51 */
+
+#endif //!defined(LDS) && !defined(__ASSEMBLER__)
+
+#endif //NRF51
 
 #endif /* NRF_H */
