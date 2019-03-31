@@ -12,6 +12,8 @@
 #include "dbg.h"
 #endif // DFU_DEBUG
 
+extern void svc_call(unsigned int num, unsigned int param1, unsigned int param2, unsigned int param3);
+
 void main()
 {
     //
@@ -34,5 +36,7 @@ void main()
     {
         delay_ms(1000);
         pin_toggle(P28);
+
+        svc_call(15, 0xF00000AC, 0x80000001, 0xFFFF);
     }
 }

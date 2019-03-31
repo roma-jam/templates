@@ -37,7 +37,7 @@ INCLUDES                    = $(INCLUDE_FOLDERS:%=-I%)
 VPATH                      += $(INCLUDE_FOLDERS)
 #----------------------------------------------------------
 #core-dependent part
-SRC_AS                      = startup_cortexm.S
+SRC_AS                      = startup_cortexm.S cortexm.S
 
 SRC_C						= nrf_power.c nrf_pin.c nrf_uart.c nrf_radio.c
 
