@@ -11,3 +11,4 @@ stm32f100_storage/output/puf_MK22FN256VLH12.hex
 *.bin
 stm32f100_storage/output/
 nrf51822/build/
+nrf_rexos/.settings/
