@@ -50,7 +50,7 @@ OBJ                         = $(SRC_AS:%.S=%.o) $(SRC_C:%.c=%.o)
 #----------------------------------------------------------
 DEFINES                     = -D$(MCU) -D__CORTEX -D'__MCU="$(MCU)"' -D'__BUILD_TIME="$(CURRENT_DATE)"'
 
-MCU_FLAGS                   = -mcpu=cortex-m0 -mthumb -D__CORTEX_M0 -mtune=cortex-m0 -std=gnu99
+MCU_FLAGS                   = -mcpu=cortex-m0 -mthumb -D__CORTEX_M0 -mtune=cortex-m0 -std=gnu99 -g3
 
 NO_DEFAULTS                 = -fdata-sections -ffunction-sections -fno-hosted -fno-builtin  -nostdlib -nodefaultlibs
 FLAGS_CC                    = $(INCLUDES) $(DEFINES) -I. -O$(OPTIMIZATION) -c -fmessage-length=0 $(MCU_FLAGS) $(NO_DEFAULTS)
@@ -79,7 +79,7 @@ all: $(TARGET_NAME).elf
 .S.o:
 	@-mkdir -p $(BUILD_DIR)
 	@echo AS_C: $<
-	@$(GCC) $(INCLUDES) -I. $(DEFINES) -c -x assembler-with-cpp ./$< -o $(BUILD_DIR)/$@
+	@$(GCC) $(INCLUDES) -I. $(DEFINES) -c -x assembler-with-cpp -g3 ./$< -o $(BUILD_DIR)/$@
 
 program:
 #	@openocd -f nrf51822.cfg -c "init" -c "flash probe 0" -c "exit"
