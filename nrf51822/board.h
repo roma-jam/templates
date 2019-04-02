@@ -33,5 +33,6 @@ extern void delay_ms(unsigned int ms);
 
 
 extern void RADIO_IRQHandler();
+extern void TIMER0_IRQHandler();
 
 #endif /* BOARD_H_ */

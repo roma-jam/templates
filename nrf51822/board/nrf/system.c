@@ -66,6 +66,12 @@ void irq(int vector)
         return;
     }
 
+    if(TIMER0_IRQn == vector)
+    {
+        TIMER0_IRQHandler();
+        return;
+    }
+
 #if (DFU_DEBUG)
     printf("IRQ stub, %d\n", vector);
 #endif // CPU_DEBUG
