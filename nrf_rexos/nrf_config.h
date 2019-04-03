@@ -32,11 +32,12 @@
 #define LFCLK_SOURCE                            CLOCK_LFCLKSRC_SRC_Synth
 
 //------------------------------ TIMER -----------------------------------------------
-#define HPET_TIMER                              TIMER_1
+#define HPET_TIMER                              TIMER_0
 // compare counter from 0 to 3
 #define HPET_TIMER_CC                           0
 //only required if no NRF_RTC_DRIVER is set
-#define SECOND_PULSE_TIMER                      TIMER_2
+#define SECOND_PULSE_TIMER                      TIMER_1
+#define SECOND_PULSE_TIMER_CC                   0
 //------------------------------- ADC ------------------------------------------------
 
 
