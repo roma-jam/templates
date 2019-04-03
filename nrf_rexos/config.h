@@ -39,9 +39,9 @@
 #define TCPIP_PROCESS_SIZE                          1200
 #define TCPIP_PROCESS_PRIORITY                      149
 
-#define DBG_CONSOLE                                 UART_2
+#define DBG_CONSOLE                                 UART_0
 #define DBG_CONSOLE_BAUD                            115200
-#define DBG_CONSOLE_TX_PIN                          D5
+#define DBG_CONSOLE_TX_PIN                          P9
 
 #define TEST_ROUNDS                                 10000
 

@@ -12,8 +12,8 @@ OBJDUMP                    = $(CROSS)objdump
 NM                         = $(CROSS)nm
 
 #----------------------------------------------------------
-MCU                         = STM32F107VC
-TARGET_NAME                 = stm32eth
+MCU                         = NRF51822QFAA
+TARGET_NAME                 = nrf_template
 #----------------------------------------------------------
 BUILD_DIR                   = build
 OUTPUT_DIR                  = output
@@ -25,21 +25,22 @@ LDS_SCRIPT                  = $(KERNEL)/arm.ld.S
 #----------------------------------------------------------
 CMSIS_DIR                   = $(REXOS)/CMSIS
 #CMSIS_DEVICE_DIR            = $(CMSIS_DIR)/Device/ST/STM32L0xx
-CMSIS_DEVICE_DIR            = $(CMSIS_DIR)/Device/ST/STM32F10x
+#CMSIS_DEVICE_DIR            = $(CMSIS_DIR)/Device/ST/STM32F10x
 #CMSIS_DEVICE_DIR           = $(CMSIS_DIR)/Device/ST/STM32F2xx
 #CMSIS_DEVICE_DIR           = $(CMSIS_DIR)/Device/ST/STM32F4xx
 #CMSIS_DEVICE_DIR            = $(CMSIS_DIR)/Device/NXP/LPC11Uxx
+CMSIS_DEVICE_DIR            = $(CMSIS_DIR)/Device/NORDIC/nRF51
 #----------------------------------------------------------
 #not used in kernel
-INCLUDE_FOLDERS             = $(CMSIS_DIR)/Include $(CMSIS_DEVICE_DIR)/Include
+INCLUDE_FOLDERS             = $(CMSIS_DIR)/Include $(CMSIS_DEVICE_DIR)
 #kernel
 INCLUDE_FOLDERS            += $(KERNEL) $(KERNEL)/core
 #lib
 INCLUDE_FOLDERS            += $(LIB)
 #userspace
-INCLUDE_FOLDERS            += $(USERSPACE) $(USERSPACE)/core $(USERSPACE)/stm32
+INCLUDE_FOLDERS            += $(USERSPACE) $(USERSPACE)/core $(USERSPACE)/nrf
 #sys
-INCLUDE_FOLDERS            += $(REXOS)/kernel/drv $(REXOS)/kernel/stm32 $(REXOS)/midware $(REXOS)/midware/usbd $(REXOS)/midware/tcpips
+INCLUDE_FOLDERS            += $(REXOS)/kernel/drv $(REXOS)/kernel/nrf $(REXOS)/midware
 
 INCLUDES                    = $(INCLUDE_FOLDERS:%=-I%)
 VPATH                      += $(INCLUDE_FOLDERS)
@@ -48,23 +49,25 @@ VPATH                      += $(INCLUDE_FOLDERS)
 SRC_C                       = kcortexm.c
 SRC_AS                      = startup_cortexm.S cortexm.S
 #kernel
-SRC_C                      += kernel.c dbg.c kstdlib.c karray.c kso.c kirq.c kprocess.c ksystime.c kipc.c kstream.c kobject.c kio.c kerror.c kexo.c
+SRC_C						+= kernel.c dbg.c kstdlib.c karray.c kso.c kirq.c kprocess.c ksystime.c kipc.c kstream.c kobject.c kio.c kerror.c kexo.c
 #lib
 SRC_C                      += lib_lib.c lib_systime.c pool.c printf.c lib_std.c lib_stdio.c lib_array.c lib_so.c
 #drv
-SRC_C                      += stm32_pin.c stm32_gpio.c stm32_power.c stm32_timer.c stm32_rtc.c stm32_exo.c stm32_uart.c stm32_otg.c stm32_eth.c
+SRC_C						+= nrf_pin.c nrf_power.c nrf_timer.c nrf_exo.c nrf_uart.c
+#SRC_C                      += stm32_pin.c stm32_gpio.c stm32_power.c stm32_timer.c stm32_rtc.c stm32_exo.c stm32_uart.c stm32_otg.c stm32_eth.c
 #userspace lib
-SRC_C                      += ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c usb.c power.c stream.c pin.c
-SRC_C                      += eth.c tcpip.c mac.c icmp.c ip.c arp.c tcp.c
+SRC_C						+= ipc.c io.c process.c stdio.c stdlib.c systime.c stream.c pin.c uart.c
+#SRC_C                      += ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c usb.c power.c stream.c pin.c
+#SRC_C                      += eth.c tcpip.c mac.c icmp.c ip.c arp.c tcp.c
 #midware
-SRC_C                      += usbd.c cdc_acmd.c eth_phy.c tcpips.c macs.c routes.c arps.c ips.c icmps.c tcps.c
+#SRC_C                      += usbd.c cdc_acmd.c eth_phy.c tcpips.c macs.c routes.c arps.c ips.c icmps.c tcps.c
 #userspace lib
-SRC_C                      += app.c comm.c net.c
+SRC_C                      += app.c
 
 OBJ                         = $(SRC_AS:%.S=%.o) $(SRC_C:%.c=%.o)
 #----------------------------------------------------------
 DEFINES                     = -D$(MCU)
-MCU_FLAGS                   = -mcpu=cortex-m3 -mthumb -D__CORTEX_M3 -D__thumb2__=1 -mtune=cortex-m3 -msoft-float -mapcs-frame
+MCU_FLAGS                   = -mcpu=cortex-m0 -mthumb -D__CORTEX_M0 -mtune=cortex-m0 -g3
 NO_DEFAULTS                 = -fdata-sections -ffunction-sections -fno-hosted -fno-builtin  -nostdlib -nodefaultlibs
 FLAGS_CC                    = $(INCLUDES) $(DEFINES) -I. -O$(OPTIMIZATION) -Wall -c -fmessage-length=0 $(MCU_FLAGS) $(NO_DEFAULTS)
 FLAGS_LD                    = -Xlinker --gc-sections $(MCU_FLAGS)
@@ -93,11 +96,12 @@ all: $(TARGET_NAME).elf
 .S.o:
 	@-mkdir -p $(BUILD_DIR)
 	@echo AS_C: $<
-	@$(GCC) $(INCLUDES) -I. $(DEFINES) -c -x assembler-with-cpp ./$< -o $(BUILD_DIR)/$@
+	@$(GCC) $(INCLUDES) -I. $(DEFINES) -c -x assembler-with-cpp -g3 ./$< -o $(BUILD_DIR)/$@
 
 program:
 #	@st-flash write $(OUTPUT_DIR)/$(TARGET_NAME).bin 0x8000000
-	@openocd -f stm32f1.cfg -c "program $(OUTPUT_DIR)/$(TARGET_NAME).bin 0x08000000 reset exit"
+#	@openocd -f stm32f1.cfg -c "program $(OUTPUT_DIR)/$(TARGET_NAME).bin 0x08000000 reset exit"
+	@openocd -f nrf51822.cfg -c "program $(OUTPUT_DIR)/$(TARGET_NAME).bin 0x00000000" -c "reset" -c "exit 0x0"
 
 clean:
 	@echo '-----------------------------------------------------------'
