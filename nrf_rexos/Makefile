@@ -53,10 +53,10 @@ SRC_C						+= kernel.c dbg.c kstdlib.c karray.c kso.c kirq.c kprocess.c ksystime
 #lib
 SRC_C                      += lib_lib.c lib_systime.c pool.c printf.c lib_std.c lib_stdio.c lib_array.c lib_so.c
 #drv
-SRC_C						+= nrf_pin.c nrf_power.c nrf_timer.c nrf_exo.c nrf_uart.c
+SRC_C						+= nrf_pin.c nrf_power.c nrf_timer.c nrf_exo.c nrf_uart.c nrf_rtc.c
 #SRC_C                      += stm32_pin.c stm32_gpio.c stm32_power.c stm32_timer.c stm32_rtc.c stm32_exo.c stm32_uart.c stm32_otg.c stm32_eth.c
 #userspace lib
-SRC_C						+= ipc.c io.c process.c stdio.c stdlib.c systime.c stream.c pin.c uart.c
+SRC_C						+= ipc.c io.c process.c stdio.c stdlib.c systime.c stream.c pin.c uart.c power.c
 #SRC_C                      += ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c usb.c power.c stream.c pin.c
 #SRC_C                      += eth.c tcpip.c mac.c icmp.c ip.c arp.c tcp.c
 #midware
@@ -66,7 +66,7 @@ SRC_C                      += app.c
 
 OBJ                         = $(SRC_AS:%.S=%.o) $(SRC_C:%.c=%.o)
 #----------------------------------------------------------
-DEFINES                     = -D$(MCU)
+DEFINES                     = -D$(MCU) -D'__MCU="$(MCU)"'
 MCU_FLAGS                   = -mcpu=cortex-m0 -mthumb -D__CORTEX_M0 -mtune=cortex-m0 -g3
 NO_DEFAULTS                 = -fdata-sections -ffunction-sections -fno-hosted -fno-builtin  -nostdlib -nodefaultlibs
 FLAGS_CC                    = $(INCLUDES) $(DEFINES) -I. -O$(OPTIMIZATION) -Wall -c -fmessage-length=0 $(MCU_FLAGS) $(NO_DEFAULTS)

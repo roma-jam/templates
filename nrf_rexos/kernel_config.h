@@ -28,7 +28,7 @@
 //Don't forget to turn off in production.
 #define KERNEL_DEVELOPER_MODE                       1
 //enable this only if you have problems with system timer. May decrease perfomance
-#define KERNEL_TIMER_DEBUG                          0
+#define KERNEL_TIMER_DEBUG                          1
 //size of IPC queue per process
 #define KERNEL_IPC_COUNT                            7
 //enable this only if you have problems with IPC oferflow.

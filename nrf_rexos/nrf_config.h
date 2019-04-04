@@ -15,7 +15,9 @@
 #define NRF_FLASH_DRIVER                        0
 #define NRF_SPI_DRIVER                          0
 #define NRF_UART_DRIVER                         1
-#define NRF_RTC_DRIVER                          0
+// core second and hpet based on RTC
+#define NRF_RTC_DRIVER                          1
+#define NRF_TIMER_DRIVER                        1
 #define NRF_RADIO_DRIVER                        0
 
 //------------------------------ CORE ------------------------------------------------
@@ -28,16 +30,16 @@
 /* High Frequency OSC. 0 mean internal RC */
 #define HFCLK                                   16000000
 /* Low Frequency OSC. 0 - not use LFCLK */
-#define LFCLK                                   0
+#define LFCLK                                   32768
 #define LFCLK_SOURCE                            CLOCK_LFCLKSRC_SRC_Synth
 
 //------------------------------ TIMER -----------------------------------------------
+//Don't change this if you are not sure. Unused if RTC is configured
+#define SECOND_RTC                              RTC_0
+#define SECOND_CHANNEL                          RTC_CC0
+// Use another channel for HPET
 #define HPET_TIMER                              TIMER_0
-// compare counter from 0 to 3
-#define HPET_TIMER_CC                           0
-//only required if no NRF_RTC_DRIVER is set
-#define SECOND_PULSE_TIMER                      TIMER_1
-#define SECOND_PULSE_TIMER_CC                   0
+#define HPET_CHANNEL                            TIMER_CC0
 //------------------------------- ADC ------------------------------------------------
 
 

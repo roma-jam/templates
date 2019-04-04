@@ -67,9 +67,7 @@ static inline void app_setup_dbg()
     pin_enable(DBG_CONSOLE_TX_PIN, PIN_MODE_OUTPUT, PIN_PULL_NOPULL);
     uart_open(DBG_CONSOLE, UART_MODE_STREAM | UART_TX_STREAM);
     baudrate.baud = DBG_CONSOLE_BAUD;
-    baudrate.data_bits = 8;
     baudrate.parity = 'N';
-    baudrate.stop_bits= 1;
     uart_set_baudrate(DBG_CONSOLE, &baudrate);
     uart_setup_printk(DBG_CONSOLE);
 //    uart_setup_stdout(DBG_CONSOLE);
@@ -103,8 +101,19 @@ void app()
 
     app_init(&app);
 
-    for (;;);
+    SYSTIME time;
 
+    get_uptime(&time);
+
+    for (;;)
+    {
+        sleep_ms(99);
+//        exodriver_delay_us(1000000);
+//        process_info();
+        printk("WUP, %d\n", systime_elapsed_ms(&time));
+    }
+
+//    for(;;)
 //    {
 //        ipc_read(&ipc);
 //        switch (HAL_GROUP(ipc.cmd))
