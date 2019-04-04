@@ -65,10 +65,20 @@ void app()
     IPC ipc;
 
     app_init(&app);
-    checksum_init(&app);
+//    checksum_init(&app);
 
     /* enable LED PIN */
-    led_init(&app);
+//    led_init(&app);
+
+    SYSTIME time;
+
+    get_uptime(&time);
+
+    while(1)
+    {
+        sleep_ms(333);
+        printk("WUP, %d\n", systime_elapsed_ms(&time));
+    }
 
     for (;;)
     {

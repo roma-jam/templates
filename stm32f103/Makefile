@@ -12,7 +12,8 @@ OBJDUMP                    = $(CROSS)objdump
 NM                         = $(CROSS)nm
 
 #----------------------------------------------------------
-MCU 						= STM32F103C8
+#MCU 						= STM32F103C8
+MCU 						= STM32F100RB
 TARGET_NAME                 = stm32_template
 #----------------------------------------------------------
 BUILD_DIR                   = build
