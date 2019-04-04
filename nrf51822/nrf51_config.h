@@ -18,7 +18,7 @@
 /* High Frequency OSC. 0 mean internal RC */
 #define HFCLK                       16000000
 /* Low Frequency OSC. 0 - not use LFCLK */
-#define LFCLK                       0
+#define LFCLK                       32768
 #define LFCLK_SOURCE                CLOCK_LFCLKSRC_SRC_Synth
 
 //------------------------------ UART ------------------------------------------
