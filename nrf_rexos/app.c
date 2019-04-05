@@ -97,7 +97,7 @@ static inline void app_timeout(APP* app)
 void app()
 {
     APP app;
-    IPC ipc;
+//    IPC ipc;
 
     app_init(&app);
 
@@ -107,7 +107,7 @@ void app()
 
     for (;;)
     {
-        sleep_ms(99);
+        sleep_ms(1000);
 //        exodriver_delay_us(1000000);
 //        process_info();
         printk("WUP, %d\n", systime_elapsed_ms(&time));

@@ -15,8 +15,7 @@
 #define NRF_FLASH_DRIVER                        0
 #define NRF_SPI_DRIVER                          0
 #define NRF_UART_DRIVER                         1
-// core second and hpet based on RTC
-#define NRF_RTC_DRIVER                          1
+#define NRF_RTC_DRIVER                          0
 #define NRF_TIMER_DRIVER                        1
 #define NRF_RADIO_DRIVER                        0
 
@@ -35,8 +34,12 @@
 
 //------------------------------ TIMER -----------------------------------------------
 //Don't change this if you are not sure. Unused if RTC is configured
+#if (NRF_RTC_DRIVER)
 #define SECOND_RTC                              RTC_0
 #define SECOND_CHANNEL                          RTC_CC0
+#else
+#define SECOND_CHANNEL                          TIMER_CC1
+#endif // NRF_RTC_DRIVER
 // Use another channel for HPET
 #define HPET_TIMER                              TIMER_0
 #define HPET_CHANNEL                            TIMER_CC0
