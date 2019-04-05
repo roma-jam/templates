@@ -70,15 +70,14 @@ static inline void app_setup_dbg()
     baudrate.parity = 'N';
     uart_set_baudrate(DBG_CONSOLE, &baudrate);
     uart_setup_printk(DBG_CONSOLE);
-//    uart_setup_stdout(DBG_CONSOLE);
-//    open_stdout();
+    uart_setup_stdout(DBG_CONSOLE);
+    open_stdout();
 }
 
 static inline void app_init(APP* app)
 {
 //    gpio_enable_pin(B14, GPIO_MODE_OUT);
 //    gpio_reset_pin(B14);
-
 
     app_setup_dbg();
 //    app->timer = timer_create(0, HAL_APP);
@@ -97,42 +96,36 @@ static inline void app_timeout(APP* app)
 void app()
 {
     APP app;
-//    IPC ipc;
+    IPC ipc;
 
     app_init(&app);
+
+    process_info();
 
     SYSTIME time;
 
     get_uptime(&time);
 
-    for (;;)
+    while(1)
     {
         sleep_ms(1000);
-//        exodriver_delay_us(1000000);
-//        process_info();
-        printk("WUP, %d\n", systime_elapsed_ms(&time));
+        process_info();
+//        printk("WUP %d\n", systime_elapsed_ms(&time));
     }
 
-//    for(;;)
-//    {
-//        ipc_read(&ipc);
-//        switch (HAL_GROUP(ipc.cmd))
-//        {
-//        case HAL_USBD:
-//            comm_request(&app, &ipc);
-//            break;
-//        case HAL_IP:
-//        case HAL_UDP:
-//        case HAL_TCP:
-//            net_request(&app, &ipc);
-//            break;
-//        case HAL_APP:
-//            app_timeout(&app);
-//            break;
-//        default:
-//            error(ERROR_NOT_SUPPORTED);
-//            break;
-//        }
-//        ipc_write(&ipc);
-//    }
+
+    for(;;)
+    {
+        ipc_read(&ipc);
+        switch (HAL_GROUP(ipc.cmd))
+        {
+        case HAL_APP:
+            app_timeout(&app);
+          break;
+        default:
+            error(ERROR_NOT_SUPPORTED);
+            break;
+        }
+        ipc_write(&ipc);
+    }
 }
