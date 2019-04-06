@@ -15,10 +15,9 @@
 #include <stdint.h>
 
 typedef struct _APP {
-    COMM comm;
-    NET net;
+    bool led_on;
     HANDLE timer;
-    HANDLE usbd;
+
 } APP;
 
 #endif // APP_PRIVATE_H

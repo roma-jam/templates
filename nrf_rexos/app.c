@@ -76,8 +76,8 @@ static inline void app_setup_dbg()
 
 static inline void app_init(APP* app)
 {
-//    gpio_enable_pin(B14, GPIO_MODE_OUT);
-//    gpio_reset_pin(B14);
+    gpio_enable_pin(P28, GPIO_MODE_OUT);
+    gpio_reset_pin(P28);
 
     app_setup_dbg();
 
@@ -85,13 +85,20 @@ static inline void app_init(APP* app)
     timer_start_ms(app->timer, 1000);
 
 //    stat();
-//    printf("App init\n");
+    printf("App init\n");
 }
 
 static inline void app_timeout(APP* app)
 {
     printf("app timer timeout test\n");
     timer_start_ms(app->timer, 1000);
+
+    /* toggle led */
+    if(app->led_on)
+        gpio_reset_pin(LED_PIN);
+    else
+        gpio_set_pin(LED_PIN);
+    app->led_on = !app->led_on;
 }
 
 void app()
@@ -101,7 +108,11 @@ void app()
 
     app_init(&app);
 
-    process_info();
+    pin_enable(LED_PIN, PIN_MODE_OUTPUT, PIN_PULL_NOPULL);
+    gpio_set_pin(LED_PIN);
+    app.led_on = true;
+
+    printf("reset_reason: %d\n", get_exo(HAL_REQ(HAL_POWER, NRF_POWER_GET_RESET_REASON), 0, 0, 0));
 
     for(;;)
     {
