@@ -32,7 +32,6 @@
 #define UART_BUF_SIZE                                       16
 //generally UART is used as stdout/stdio, so fine-tuning is required only on hi load
 #define UART_STREAM_SIZE                                    32
-
 //------------------------------ POWER -----------------------------------------------
 /* High Frequency OSC. 0 mean internal RC */
 #define HFCLK                                   16000000

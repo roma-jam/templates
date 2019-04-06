@@ -80,8 +80,9 @@ static inline void app_init(APP* app)
 //    gpio_reset_pin(B14);
 
     app_setup_dbg();
-//    app->timer = timer_create(0, HAL_APP);
-//    timer_start_ms(app->timer, 1000);
+
+    app->timer = timer_create(0, HAL_APP);
+    timer_start_ms(app->timer, 1000);
 
 //    stat();
 //    printf("App init\n");
@@ -101,18 +102,6 @@ void app()
     app_init(&app);
 
     process_info();
-
-    SYSTIME time;
-
-    get_uptime(&time);
-
-    while(1)
-    {
-        sleep_ms(1000);
-        process_info();
-//        printk("WUP %d\n", systime_elapsed_ms(&time));
-    }
-
 
     for(;;)
     {
