@@ -17,7 +17,7 @@
 #define NRF_UART_DRIVER                         1
 #define NRF_RTC_DRIVER                          1
 #define NRF_TIMER_DRIVER                        1
-#define NRF_RADIO_DRIVER                        0
+#define NRF_RF_DRIVER                           1
 
 //------------------------------ CORE ------------------------------------------------
 

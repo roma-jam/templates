@@ -82,7 +82,7 @@ static inline void app_init(APP* app)
     app_setup_dbg();
 
     app->timer = timer_create(0, HAL_APP);
-    timer_start_ms(app->timer, 1000);
+//    timer_start_ms(app->timer, 1000);
 
 //    stat();
     printf("App init\n");
@@ -113,6 +113,9 @@ void app()
     app.led_on = true;
 
     printf("reset_reason: %d\n", get_exo(HAL_REQ(HAL_POWER, NRF_POWER_GET_RESET_REASON), 0, 0, 0));
+
+
+    ack(KERNEL_HANDLE, HAL_CMD(HAL_RF, IPC_OPEN), 0, 0, 0);
 
     for(;;)
     {
