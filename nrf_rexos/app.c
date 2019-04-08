@@ -20,6 +20,7 @@
 #include "../../rexos/userspace/pin.h"
 #include "../../rexos/midware/pinboard.h"
 #include "../../rexos/userspace/nrf/nrf_driver.h"
+#include "../../rexos/userspace/nrf/radio.h"
 #include "app_private.h"
 #include "config.h"
 
@@ -82,23 +83,26 @@ static inline void app_init(APP* app)
     app_setup_dbg();
 
     app->timer = timer_create(0, HAL_APP);
-//    timer_start_ms(app->timer, 1000);
+    timer_start_ms(app->timer, 2000);
 
 //    stat();
     printf("App init\n");
+    printf("Reset Reason: %d\n", get_exo(HAL_REQ(HAL_POWER, NRF_POWER_GET_RESET_REASON), 0, 0, 0));
 }
 
 static inline void app_timeout(APP* app)
 {
-    printf("app timer timeout test\n");
-    timer_start_ms(app->timer, 1000);
+    timer_start_ms(app->timer, 2000);
 
     /* toggle led */
     if(app->led_on)
         gpio_reset_pin(LED_PIN);
     else
         gpio_set_pin(LED_PIN);
+
     app->led_on = !app->led_on;
+
+    radio_get_advertise(200, 0, 500);
 }
 
 void app()
@@ -109,13 +113,10 @@ void app()
     app_init(&app);
 
     pin_enable(LED_PIN, PIN_MODE_OUTPUT, PIN_PULL_NOPULL);
-    gpio_set_pin(LED_PIN);
-    app.led_on = true;
+    gpio_reset_pin(LED_PIN);
+    app.led_on = false;
 
-    printf("reset_reason: %d\n", get_exo(HAL_REQ(HAL_POWER, NRF_POWER_GET_RESET_REASON), 0, 0, 0));
-
-
-    ack(KERNEL_HANDLE, HAL_CMD(HAL_RF, IPC_OPEN), 0, 0, 0);
+    radio_open(RADIO_MODE_BLE_1Mbit);
 
     for(;;)
     {
