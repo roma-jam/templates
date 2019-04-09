@@ -14,3 +14,6 @@ nrf51822/build/
 nrf_rexos/.settings/
 nrf_rexos/build/
 nrf51822/.settings/
+stm32f100_CoCo/build/
+stm32f100_CoCo/.settings/
+stm32f100_CoCo/output/
