@@ -9,6 +9,9 @@
 #include "board.h"
 #include "system.h"
 
+#include "userspace/stdlib.h"
+#include "ucore.h"
+
 #if (DFU_DEBUG)
 #include "dbg.h"
 #endif // DFU_DEBUG
@@ -51,6 +54,19 @@ void main()
     printf("CoCo Template, v%d.%d, %s\n", VERSION >> 8, VERSION & 0xff, __BUILD_TIME);
     printf("%s core, %d MHz\n", __MCU, power_get_core_clock() / 1000000);
 #endif // DFU_DEBUG
+
+    uint8_t* data = malloc(221);
+
+    printf("malloc ");
+    if(data == NULL)
+        printf("failure\n");
+    else
+    {
+        printf("ok, addr %#X\n", data);
+        free(data);
+    }
+
+    ucore_stat();
 
 #ifdef __COVERAGESCANNER__
   __coveragescanner_set_custom_io(

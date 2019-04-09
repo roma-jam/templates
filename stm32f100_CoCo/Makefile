@@ -29,9 +29,10 @@ CORE_DIR					= core
 BOARD_DIR					= board
 LDS_SCRIPT                  = $(CORE_DIR)/script.ld.S
 #----------------------------------------------------------
-INCLUDE_FOLDERS 			= ./ ../ $(CORE_DIR) $(BOARD_DIR)
+INCLUDE_FOLDERS 			= ./ ../ $(CORE_DIR) $(CORE_DIR)/lib $(BOARD_DIR)
 INCLUDE_FOLDERS 			+= $(CORE_DIR)/$(PLATFORM) $(BOARD_DIR)/$(PLATFORM)
-INCLUDE_FOLDERS 			+= $(CORE_DIR)/$(PLATFORM)/$(LIB_FOLDER)
+INCLUDE_FOLDERS 			+= $(CORE_DIR)/$(PLATFORM)/$(LIB_FOLDER) 
+INCLUDE_FOLDERS				+= $(CORE_DIR)/lib $(CORE_DIR)/userspace
 
 INCLUDES                    = $(INCLUDE_FOLDERS:%=-I%)
 VPATH                      += $(INCLUDE_FOLDERS)
@@ -39,7 +40,9 @@ VPATH                      += $(INCLUDE_FOLDERS)
 #core-dependent part
 SRC_AS                      = startup_cortexm.S
 
-SRC_C						= system.c
+SRC_C						= ucore.c ucore_lib.c lib_std.c pool.c stdlib.c
+
+SRC_C						+= system.c
 SRC_C						+= $(PLATFORM)_power.c $(PLATFORM)_uart.c $(PLATFORM)_pin.c
 
 SRC_C						+= board.c crc.c
@@ -50,7 +53,7 @@ OBJ                         = $(SRC_AS:%.S=%.o) $(SRC_C:%.c=%.o)
 #----------------------------------------------------------
 DEFINES                     = -D$(MCU) -D__CORTEX -D'__MCU="$(MCU)"' -D'__BUILD_TIME="$(CURRENT_DATE)"'
 MCU_FLAGS                   = -mcpu=cortex-m3 -mthumb -D__CORTEX_M3 -D__thumb2__=1 -mtune=cortex-m3 -msoft-float -mapcs-frame -std=gnu99
-
+MCU_FLAGS					+= --cs-libgen=-mcpu=cortex-m3 --cs-libgen=-mthumb --cs-libgen=-mtune=cortex-m3 --cs-libgen=-msoft-float --cs-libgen=-mapcs-frame
 NO_DEFAULTS                 = -fdata-sections -ffunction-sections -fno-hosted -fno-builtin  -nostdlib -nodefaultlibs
 FLAGS_CC                    = $(INCLUDES) $(DEFINES) -I. -O$(OPTIMIZATION) -c -fmessage-length=0 $(MCU_FLAGS) $(NO_DEFAULTS)
 FLAGS_LD                    = -Xlinker --gc-sections $(MCU_FLAGS)

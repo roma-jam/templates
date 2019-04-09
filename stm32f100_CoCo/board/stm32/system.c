@@ -12,11 +12,10 @@
 #include "../dbg.h"
 #endif
 
-void system_early_init()
+void system_init()
 {
     // Nothing to do
 }
-
 
 void on_hard_fault()
 {

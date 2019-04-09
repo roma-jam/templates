@@ -92,14 +92,13 @@ Reset_Handler:
     str r0, [r1, #0x1c]
 #endif
 
-    bl    system_early_init
-
     @switch to MSP
     ldr r0, =0x0;
     mrs r0, control
     ldr r0, =SP_PTR
     mov sp, r0
-
+    @ system pool init
+    bl    ucore_startup
     @all interrupts are disabled
     bl     main
     @never reach
