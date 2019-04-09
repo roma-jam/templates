@@ -1,6 +1,6 @@
 PLATFORM				= stm32
 
-OPTIMIZATION            = s
+OPTIMIZATION            = 0
 CURRENT_DATE			= $(shell date +"%D %T")
 
 #----------------------------------------------------------

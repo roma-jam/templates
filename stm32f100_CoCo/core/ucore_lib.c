@@ -8,7 +8,10 @@
 
 #include "lib/lib_std.h"
 
-void lib_stub () { return; }
+void lib_stub ()
+{
+    return;
+}
 
 const void *const __LIB[] = {
     (const void *const)&__LIB_STD,

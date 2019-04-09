@@ -879,6 +879,12 @@
 #if defined(STM32)
 #ifndef FLASH_BASE
 #define FLASH_BASE                0x08000000
+
+#define SRAM_BASE                 0x20000000
+
+#define SRAM_BSS_BASE             0x20000400
+#define SRAM_BSS_SIZE             0x1C00
+
 #endif
 #endif
 

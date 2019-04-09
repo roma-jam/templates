@@ -16,12 +16,72 @@
 
 #include "../dbg.h"
 
+
+/**
+ * @brief   ROM image of the data segment start.
+ * @pre     The symbol must be aligned to a 32 bits boundary.
+ */
+extern uint32_t _textdata;
+
+/**
+ * @brief   Data segment start.
+ * @pre     The symbol must be aligned to a 32 bits boundary.
+ */
+extern uint32_t _data;
+
+/**
+ * @brief   Data segment end.
+ * @pre     The symbol must be aligned to a 32 bits boundary.
+ */
+extern uint32_t _edata;
+
+/**
+ * @brief   BSS segment start.
+ * @pre     The symbol must be aligned to a 32 bits boundary.
+ */
+extern uint32_t _bss_start;
+
+/**
+ * @brief   BSS segment end.
+ * @pre     The symbol must be aligned to a 32 bits boundary.
+ */
+extern uint32_t _bss_end;
+
+
 const char *const STAT_LINE="-------------------------------------------------------------------------\n";
 
 //const char *const DAMAGED="     !!!DAMAGED!!!     ";
 
+/*
+ * Area fill code, it is a macro because here functions cannot be called
+ * until stacks are initialized.
+ */
+#define fill32(start, end, filler) {                                        \
+  uint32_t *p1 = start;                                                     \
+  uint32_t *p2 = end;                                                       \
+  while (p1 < p2)                                                           \
+    *p1++ = filler;                                                         \
+}
+
 void ucore_startup()
 {
+#if (1)
+    /* BSS segment initialization.*/
+    fill32(&_bss_start, &_bss_end, 0);
+#endif
+
+#if (1)
+    /* DATA segment initialization.*/
+    {
+      uint32_t *tp, *dp;
+
+      tp = &_textdata;
+      dp = &_data;
+      while (dp < &_edata)
+        *dp++ = *tp++;
+    }
+#endif
+
     //setup __GLOBAL
     __GLOBAL->lib = (const void**)&__LIB;
     // setup pool
