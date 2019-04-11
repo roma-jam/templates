@@ -102,7 +102,6 @@ static inline void app_timeout(APP* app)
 
     app->led_on = !app->led_on;
 
-    radio_get_advertise(200, 0, 500);
 }
 
 void app()
@@ -116,7 +115,12 @@ void app()
     gpio_reset_pin(LED_PIN);
     app.led_on = false;
 
+//    app.ble = radio_create(RADIO_PROCESS_SIZE, RADIO_PROCESS_PRIORITY);
+//    sleep_ms(200);
+//    process_info();
+
     radio_open(RADIO_MODE_BLE_1Mbit);
+    radio_listen_adv_channel(512, 0, 500);
 
     for(;;)
     {

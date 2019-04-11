@@ -17,7 +17,7 @@
 typedef struct _APP {
     bool led_on;
     HANDLE timer;
-
+    HANDLE ble;
 } APP;
 
 #endif // APP_PRIVATE_H
