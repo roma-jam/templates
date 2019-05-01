@@ -18,10 +18,12 @@
 #include "../../rexos/userspace/process.h"
 #include "../../rexos/userspace/power.h"
 #include "../../rexos/userspace/pin.h"
+#include "../../rexos/userspace/flash.h"
 #include "../../rexos/midware/pinboard.h"
 #include "../../rexos/userspace/nrf/nrf_driver.h"
 #include "../../rexos/userspace/nrf/radio.h"
 #include "app_private.h"
+#include "button.h"
 #include "config.h"
 
 void app();
@@ -59,7 +61,10 @@ static inline void stat()
     printf("average switch time: %d.%dus\n", diff / TEST_ROUNDS, (diff / (TEST_ROUNDS / 10)) % 10);
 
     printf("core clock: %d\n", power_get_core_clock());
+
+    sleep_ms(100);
     process_info();
+
 }
 
 static inline void app_setup_dbg()
@@ -83,24 +88,67 @@ static inline void app_init(APP* app)
     app_setup_dbg();
 
     app->timer = timer_create(0, HAL_APP);
-    timer_start_ms(app->timer, 2000);
+    timer_start_ms(app->timer, 300);
 
 //    stat();
     printf("App init\n");
-    printf("Reset Reason: %d\n", get_exo(HAL_REQ(HAL_POWER, NRF_POWER_GET_RESET_REASON), 0, 0, 0));
+
+    printf("RAMON %X\n", NRF_POWER->RAMON);
+    printf("RAMSTATUS %X\n", NRF_POWER->RAMSTATUS);
+
+#if (NRF_DECODE_RESET)
+    uint32_t rr = get_exo(HAL_REQ(HAL_POWER, NRF_POWER_GET_RESET_REASON), 0, 0, 0);
+    printf("Reset Reason (%d): ", rr);
+    switch(rr)
+    {
+        case POWER_RESETREAS_DIF_Msk:
+            printf("DIF\n");
+            break;
+        case POWER_RESETREAS_LPCOMP_Msk:
+            printf("LPCOMP\n");
+            break;
+        case POWER_RESETREAS_OFF_Msk:
+            printf("WAKEUP GPIO\n");
+            break;
+        case POWER_RESETREAS_LOCKUP_Msk:
+            printf("LOCKUP\n");
+            break;
+        case POWER_RESETREAS_SREQ_Msk:
+            printf("AIRCR.SYSRESETREQ\n");
+            break;
+        case POWER_RESETREAS_DOG_Msk:
+            printf("WDOG\n");
+            break;
+        case POWER_RESETREAS_RESETPIN_Msk:
+            printf("RESET PIN\n");
+            break;
+        default:
+            printf("NOT DETECTED\n");
+    }
+#endif // NRF_DECODE_RESET
 }
 
 static inline void app_timeout(APP* app)
 {
-    timer_start_ms(app->timer, 2000);
+    /* go sleep */
+//    power_set_mode(POWER_MODE_STOP);
+
+    printf("timeout\n");
+
+    timer_start_ms(app->timer, 300);
+
+    /* send advertise packet */
+//    radio_send_adv(0, NULL, 0);
 
     /* toggle led */
+#if (1)
     if(app->led_on)
         gpio_reset_pin(LED_PIN);
     else
         gpio_set_pin(LED_PIN);
 
     app->led_on = !app->led_on;
+#endif //
 
 }
 
@@ -115,12 +163,12 @@ void app()
     gpio_reset_pin(LED_PIN);
     app.led_on = false;
 
-//    app.ble = radio_create(RADIO_PROCESS_SIZE, RADIO_PROCESS_PRIORITY);
-//    sleep_ms(200);
-//    process_info();
+//    button_init(&app);
 
-    radio_open(RADIO_MODE_BLE_1Mbit);
-    radio_listen_adv_channel(512, 0, 500);
+//    app.ble = ble_open();
+//    radio_listen_adv_channel(100, 0, 500);
+
+
 
     for(;;)
     {
@@ -130,6 +178,9 @@ void app()
         case HAL_APP:
             app_timeout(&app);
           break;
+        case HAL_PINBOARD:
+            button_request(&app, &ipc);
+            break;
         default:
             error(ERROR_NOT_SUPPORTED);
             break;

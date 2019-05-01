@@ -9,15 +9,22 @@
 #ifndef APP_PRIVATE_H
 #define APP_PRIVATE_H
 
+#include <stdint.h>
 #include "app.h"
 #include "comm.h"
 #include "net.h"
-#include <stdint.h>
+#include "button.h"
+
+typedef enum {
+    APP_TIMER_BUTTON_DOUBLE_PRESS = 0x00,
+    APP_TIMER_BUTTON_LONG_PRESS,
+} APP_TIMER;
 
 typedef struct _APP {
     bool led_on;
     HANDLE timer;
     HANDLE ble;
+    BUTTON button;
 } APP;
 
 #endif // APP_PRIVATE_H

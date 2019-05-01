@@ -11,10 +11,11 @@
 
 #define LED_PIN                                     P28
 
-#define DBG_CONSOLE                                 UART_0
-#define DBG_CONSOLE_BAUD                            115200
-#define DBG_CONSOLE_TX_PIN                          P9
+#define BUTTON_PIN                                  P9
+#define BUTTON_FLAGS                                (PINBOARD_FLAG_DOWN_EVENT | \
+                                                     PINBOARD_FLAG_UP_EVENT |   \
+                                                     PINBOARD_FLAG_PULL)
 
-#define TEST_ROUNDS                                 10000
-
+#define B_PRESS_MS                                  150
+#define B_PRESS_LONG_MS                             1000
 #endif // CONFIG_H

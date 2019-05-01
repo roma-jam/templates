@@ -12,7 +12,7 @@
 //---------------------- fast drivers definitions -----------------------------------
 #define NRF_ADC_DRIVER                          0
 #define NRF_WDT_DRIVER                          0
-#define NRF_FLASH_DRIVER                        0
+#define NRF_FLASH_DRIVER                        1
 #define NRF_SPI_DRIVER                          0
 #define NRF_UART_DRIVER                         1
 #define NRF_RTC_DRIVER                          1
@@ -33,14 +33,35 @@
 //generally UART is used as stdout/stdio, so fine-tuning is required only on hi load
 #define UART_STREAM_SIZE                        32
 //------------------------------ POWER -----------------------------------------------
-//save few bytes here
-#define NRF_DECODE_RESET                        1
-/* High Frequency OSC. 0 mean internal RC */
 #define HFCLK                                   16000000
 /* Low Frequency OSC. 0 - not use LFCLK */
 #define LFCLK                                   32768
 #define LFCLK_SOURCE                            CLOCK_LFCLKSRC_SRC_Synth
 
+//save few bytes here
+#define NRF_DECODE_RESET                        1
+
+/* POWER CONFIG for SRAM blocks */
+#define NRF_SRAM_POWER_CONFIG                   1
+
+#if (NRF_SRAM_POWER_CONFIG)
+/* Count of RAM block should be checked with NUMRAMBLOCK register */
+/* RAM0 is used for kernel always. Don't change this settings */
+#define NRF_RAM0_ENABLE                         1
+/* user data SRAM pool */
+#define NRF_RAM1_ENABLE                         0
+
+/* for NRF52 */
+#define NRF_RAM2_ENABLE                         0
+#define NRF_RAM3_ENABLE                         0
+#define NRF_RAM4_ENABLE                         0
+#define NRF_RAM5_ENABLE                         0
+#define NRF_RAM6_ENABLE                         0
+#define NRF_RAM7_ENABLE                         0
+
+/* keep SRAM during system OFF */
+#define NRF_SRAM_RETENTION_ENABLE               0
+#endif // NRF_SRAM_POWER_CONFIG
 //------------------------------ TIMER -----------------------------------------------
 #if (NRF_RTC_DRIVER)
 #define KERNEL_SECOND_RTC                       0
@@ -62,4 +83,10 @@
 
 //------------------------------ FLASH -----------------------------------------------
 
+//------------------------------ DEBUG -----------------------------------------------
+#define DBG_CONSOLE                                 UART_0
+#define DBG_CONSOLE_BAUD                            115200
+#define DBG_CONSOLE_TX_PIN                          P20
+
+#define TEST_ROUNDS                                 10000
 #endif /* NRF_CONFIG_H_ */
