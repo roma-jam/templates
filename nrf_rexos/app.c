@@ -88,13 +88,10 @@ static inline void app_init(APP* app)
     app_setup_dbg();
 
     app->timer = timer_create(0, HAL_APP);
-    timer_start_ms(app->timer, 300);
+    timer_start_ms(app->timer, TIMEOUT_VALUE);
 
-//    stat();
+    stat();
     printf("App init\n");
-
-    printf("RAMON %X\n", NRF_POWER->RAMON);
-    printf("RAMSTATUS %X\n", NRF_POWER->RAMSTATUS);
 
 #if (NRF_DECODE_RESET)
     uint32_t rr = get_exo(HAL_REQ(HAL_POWER, NRF_POWER_GET_RESET_REASON), 0, 0, 0);
@@ -133,9 +130,7 @@ static inline void app_timeout(APP* app)
     /* go sleep */
 //    power_set_mode(POWER_MODE_STOP);
 
-    printf("timeout\n");
-
-    timer_start_ms(app->timer, 300);
+    timer_start_ms(app->timer, TIMEOUT_VALUE);
 
     /* send advertise packet */
 //    radio_send_adv(0, NULL, 0);
@@ -163,12 +158,10 @@ void app()
     gpio_reset_pin(LED_PIN);
     app.led_on = false;
 
-//    button_init(&app);
+    button_init(&app);
 
 //    app.ble = ble_open();
 //    radio_listen_adv_channel(100, 0, 500);
-
-
 
     for(;;)
     {

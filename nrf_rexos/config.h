@@ -9,12 +9,15 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define TIMEOUT_VALUE                               500
+
 #define LED_PIN                                     P28
 
 #define BUTTON_PIN                                  P9
-#define BUTTON_FLAGS                                (PINBOARD_FLAG_DOWN_EVENT | \
-                                                     PINBOARD_FLAG_UP_EVENT |   \
-                                                     PINBOARD_FLAG_PULL)
+
+
+//#define BUTTON_FLAGS   (PINBOARD_FLAG_DOWN_EVENT | PINBOARD_FLAG_UP_EVENT |   PINBOARD_FLAG_PULL | PINBOARD_FLAG_INVERTED)
+#define BUTTON_FLAGS   (PINBOARD_FLAG_DOWN_EVENT | PINBOARD_FLAG_UP_EVENT)
 
 #define B_PRESS_MS                                  150
 #define B_PRESS_LONG_MS                             1000

@@ -39,7 +39,7 @@
 #define LFCLK_SOURCE                            CLOCK_LFCLKSRC_SRC_Synth
 
 //save few bytes here
-#define NRF_DECODE_RESET                        1
+#define NRF_DECODE_RESET                        0
 
 /* POWER CONFIG for SRAM blocks */
 #define NRF_SRAM_POWER_CONFIG                   1
