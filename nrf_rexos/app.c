@@ -19,6 +19,7 @@
 #include "../../rexos/userspace/power.h"
 #include "../../rexos/userspace/pin.h"
 #include "../../rexos/userspace/flash.h"
+#include "../../rexos/userspace/rng.h"
 #include "../../rexos/midware/pinboard.h"
 #include "../../rexos/userspace/nrf/nrf_driver.h"
 #include "../../rexos/userspace/nrf/radio.h"
@@ -158,10 +159,26 @@ void app()
     gpio_reset_pin(LED_PIN);
     app.led_on = false;
 
-    button_init(&app);
-
+//    button_init(&app);
+//
 //    app.ble = ble_open();
 //    radio_listen_adv_channel(100, 0, 500);
+
+    // RNG TEST
+#if (1)
+    SYSTIME time;
+    IO* io = io_create(32);
+    unsigned int ms = 0;
+    get_uptime(&time);
+    rng_get(io, 32);
+    ms = systime_elapsed_ms(&time);
+
+    printf("RNG: ");
+    for(int i = 0; i < 32; i++)
+        printf("%02X ", ((uint8_t*)(io_data(io)))[i]);
+    printf(", (%d ms)\n", ms);
+    io_destroy(io);
+#endif // RNG_TEST
 
     for(;;)
     {

@@ -18,6 +18,8 @@
 #define NRF_RTC_DRIVER                          1
 #define NRF_TIMER_DRIVER                        1
 #define NRF_RF_DRIVER                           1
+#define NRF_RNG_DRIVER                          1
+#define NRF_AES_ECB_DRIVER                      0
 
 //------------------------------ CORE ------------------------------------------------
 
@@ -40,17 +42,17 @@
 
 //save few bytes here
 #define NRF_DECODE_RESET                        0
-
+/* keep SRAM during system OFF */
+#define NRF_SRAM_RETENTION_ENABLE               0
 /* POWER CONFIG for SRAM blocks */
-#define NRF_SRAM_POWER_CONFIG                   1
+#define NRF_SRAM_POWER_CONFIG                   0
 
 #if (NRF_SRAM_POWER_CONFIG)
 /* Count of RAM block should be checked with NUMRAMBLOCK register */
 /* RAM0 is used for kernel always. Don't change this settings */
 #define NRF_RAM0_ENABLE                         1
 /* user data SRAM pool */
-#define NRF_RAM1_ENABLE                         0
-
+#define NRF_RAM1_ENABLE                         1
 /* for NRF52 */
 #define NRF_RAM2_ENABLE                         0
 #define NRF_RAM3_ENABLE                         0
@@ -58,9 +60,6 @@
 #define NRF_RAM5_ENABLE                         0
 #define NRF_RAM6_ENABLE                         0
 #define NRF_RAM7_ENABLE                         0
-
-/* keep SRAM during system OFF */
-#define NRF_SRAM_RETENTION_ENABLE               0
 #endif // NRF_SRAM_POWER_CONFIG
 //------------------------------ TIMER -----------------------------------------------
 #if (NRF_RTC_DRIVER)
