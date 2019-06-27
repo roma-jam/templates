@@ -22,7 +22,7 @@
 #include "../../rexos/userspace/rng.h"
 #include "../../rexos/midware/pinboard.h"
 #include "../../rexos/userspace/nrf/nrf_driver.h"
-#include "../../rexos/userspace/nrf/radio.h"
+#include "../../rexos/userspace/nrf/nrf_radio.h"
 #include "app_private.h"
 #include "button.h"
 #include "config.h"
@@ -83,15 +83,17 @@ static inline void app_setup_dbg()
 
 static inline void app_init(APP* app)
 {
-    gpio_enable_pin(P28, GPIO_MODE_OUT);
-    gpio_reset_pin(P28);
+//    gpio_enable_pin(P28, GPIO_MODE_OUT);
+//    gpio_reset_pin(P28);
 
     app_setup_dbg();
 
     app->timer = timer_create(0, HAL_APP);
     timer_start_ms(app->timer, TIMEOUT_VALUE);
 
+#if (0)
     stat();
+#endif //
     printf("App init\n");
 
 #if (NRF_DECODE_RESET)
@@ -122,16 +124,26 @@ static inline void app_timeout(APP* app)
     timer_start_ms(app->timer, TIMEOUT_VALUE);
 
     /* send advertise packet */
+    // RADIO
+#if (1)
+    gpio_set_pin(LED_PIN);
+    radio_listen_adv_channel(200, 0, 500);
+    gpio_reset_pin(LED_PIN);
 //    radio_send_adv(0, NULL, 0);
+#endif // RADIO
 
+    // WATCHDOG
+#if (0)
     wdt_kick();
+#endif // WDT
 
+    // TEMPERATURE SENSOR
 #if (0)
     printf("Temp: %d\n", get_exo(HAL_REQ(HAL_TEMP, IPC_READ), 0, 0, 0));
 #endif //
 
-    /* toggle led */
-#if (1)
+    // LED
+#if (0)
     if(app->led_on)
         gpio_reset_pin(LED_PIN);
     else
@@ -154,9 +166,8 @@ void app()
     app.led_on = false;
 
 //    button_init(&app);
-//
+
     app.ble = ble_open();
-    radio_listen_adv_channel(100, 0, 500);
 
     // GPIO WAKEUP TEST
 #if (0)

@@ -11,7 +11,7 @@
 
 //---------------------- fast drivers definitions -----------------------------------
 #define NRF_ADC_DRIVER                          0
-#define NRF_WDT_DRIVER                          1
+#define NRF_WDT_DRIVER                          0
 #define NRF_FLASH_DRIVER                        1
 #define NRF_SPI_DRIVER                          0
 #define NRF_UART_DRIVER                         1
