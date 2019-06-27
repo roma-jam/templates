@@ -11,7 +11,7 @@
 
 //---------------------- fast drivers definitions -----------------------------------
 #define NRF_ADC_DRIVER                          0
-#define NRF_WDT_DRIVER                          0
+#define NRF_WDT_DRIVER                          1
 #define NRF_FLASH_DRIVER                        1
 #define NRF_SPI_DRIVER                          0
 #define NRF_UART_DRIVER                         1
@@ -19,8 +19,8 @@
 #define NRF_TIMER_DRIVER                        1
 #define NRF_RF_DRIVER                           1
 #define NRF_RNG_DRIVER                          1
+#define NRF_TEMP_DRIVER                         1
 #define NRF_AES_ECB_DRIVER                      0
-
 //------------------------------ CORE ------------------------------------------------
 
 
@@ -41,7 +41,7 @@
 #define LFCLK_SOURCE                            CLOCK_LFCLKSRC_SRC_Synth
 
 //save few bytes here
-#define NRF_DECODE_RESET                        0
+#define NRF_DECODE_RESET                        1
 /* keep SRAM during system OFF */
 #define NRF_SRAM_RETENTION_ENABLE               0
 /* POWER CONFIG for SRAM blocks */
@@ -79,7 +79,7 @@
 //------------------------------- ADC ------------------------------------------------
 
 //------------------------------- WDT ------------------------------------------------
-
+#define WDT_TIMEOUT_S                           10
 //------------------------------ FLASH -----------------------------------------------
 
 //------------------------------ DEBUG -----------------------------------------------

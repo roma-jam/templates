@@ -96,33 +96,21 @@ static inline void app_init(APP* app)
 
 #if (NRF_DECODE_RESET)
     uint32_t rr = get_exo(HAL_REQ(HAL_POWER, NRF_POWER_GET_RESET_REASON), 0, 0, 0);
-    printf("Reset Reason (%d): ", rr);
-    switch(rr)
-    {
-        case POWER_RESETREAS_DIF_Msk:
-            printf("DIF\n");
-            break;
-        case POWER_RESETREAS_LPCOMP_Msk:
-            printf("LPCOMP\n");
-            break;
-        case POWER_RESETREAS_OFF_Msk:
-            printf("WAKEUP GPIO\n");
-            break;
-        case POWER_RESETREAS_LOCKUP_Msk:
-            printf("LOCKUP\n");
-            break;
-        case POWER_RESETREAS_SREQ_Msk:
-            printf("AIRCR.SYSRESETREQ\n");
-            break;
-        case POWER_RESETREAS_DOG_Msk:
-            printf("WDOG\n");
-            break;
-        case POWER_RESETREAS_RESETPIN_Msk:
-            printf("RESET PIN\n");
-            break;
-        default:
-            printf("NOT DETECTED\n");
-    }
+    printf("Reset Reason (%#X)\n", rr);
+    if(rr & POWER_RESETREAS_DIF_Msk)
+        printf(" DIF\n");
+    if(rr & POWER_RESETREAS_LPCOMP_Msk)
+        printf(" LPCOMP\n");
+    if(rr & POWER_RESETREAS_OFF_Msk)
+        printf(" WAKEUP GPIO\n");
+    if(rr & POWER_RESETREAS_LOCKUP_Msk)
+        printf(" LOCKUP\n");
+    if(rr & POWER_RESETREAS_SREQ_Msk)
+        printf(" AIRCR.SYSRESETREQ\n");
+    if(rr & POWER_RESETREAS_DOG_Msk)
+        printf(" WDOG\n");
+    if(rr & POWER_RESETREAS_RESETPIN_Msk)
+        printf(" RESET PIN\n");
 #endif // NRF_DECODE_RESET
 }
 
@@ -135,6 +123,12 @@ static inline void app_timeout(APP* app)
 
     /* send advertise packet */
 //    radio_send_adv(0, NULL, 0);
+
+    wdt_kick();
+
+#if (0)
+    printf("Temp: %d\n", get_exo(HAL_REQ(HAL_TEMP, IPC_READ), 0, 0, 0));
+#endif //
 
     /* toggle led */
 #if (1)
@@ -161,11 +155,37 @@ void app()
 
 //    button_init(&app);
 //
-//    app.ble = ble_open();
-//    radio_listen_adv_channel(100, 0, 500);
+    app.ble = ble_open();
+    radio_listen_adv_channel(100, 0, 500);
+
+    // GPIO WAKEUP TEST
+#if (0)
+
+    NRF_GPIOTE->CONFIG[0] = (BUTTON_PIN << GPIOTE_CONFIG_PSEL_Pos) & GPIOTE_CONFIG_PSEL_Msk;
+    NRF_GPIOTE->CONFIG[0] = GPIOTE_CONFIG_MODE_Event;
+    NRF_GPIOTE->CONFIG[0] = GPIOTE_CONFIG_POLARITY_LoToHi;
+    NRF_GPIO->PIN_CNF[BUTTON_PIN] |= PIN_SENSE_LOW;
+
+#endif //
+
+    // WDT TEST
+#if (0)
+    NRF_WDT->POWER = 1;
+    NRF_WDT->TASKS_START = 0;
+    NRF_WDT->CRV = (32768*10);
+    NRF_WDT->CONFIG =
+        WDT_CONFIG_HALT_Pause << WDT_CONFIG_HALT_Pos |
+        WDT_CONFIG_SLEEP_Pause << WDT_CONFIG_SLEEP_Pos;
+    NRF_WDT->RREN |= WDT_RREN_RR0_Msk;
+    NRF_WDT->TASKS_START = 1;
+
+    printf("%X\n", NRF_WDT->REQSTATUS);
+    printf("%X\n", NRF_WDT->RUNSTATUS);
+
+#endif //
 
     // RNG TEST
-#if (1)
+#if (0)
     SYSTIME time;
     IO* io = io_create(32);
     unsigned int ms = 0;
