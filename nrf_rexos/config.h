@@ -9,7 +9,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define TIMEOUT_VALUE                               5000
+#define TIMEOUT_VALUE                               1000
 
 #define LED_PIN                                     P28
 

@@ -81,7 +81,8 @@
 //------------------------------- WDT ------------------------------------------------
 #define WDT_TIMEOUT_S                           10
 //------------------------------ FLASH -----------------------------------------------
-
+//protect user code if VFS is allocated on flash. Must be page-aligned (512)
+#define NRF_FLASH_USER_CODE_SIZE                (128 * 1024)
 //------------------------------ DEBUG -----------------------------------------------
 #define DBG_CONSOLE                                 UART_0
 #define DBG_CONSOLE_BAUD                            115200

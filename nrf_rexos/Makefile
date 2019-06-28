@@ -57,9 +57,10 @@ SRC_C						+= nrf_pin.c nrf_gpio.c nrf_power.c nrf_timer.c nrf_exo.c nrf_uart.c 
 SRC_C						+= nrf_wdt.c
 #SRC_C                      += stm32_pin.c stm32_gpio.c stm32_power.c stm32_timer.c stm32_rtc.c stm32_exo.c stm32_uart.c stm32_otg.c stm32_eth.c
 #userspace lib
-SRC_C						+= ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c power.c stream.c pin.c nrf_radio.c flash.c wdt.c
+SRC_C						+= ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c power.c stream.c pin.c flash.c wdt.c storage.c
 #SRC_C                      += ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c usb.c power.c stream.c pin.c
 #SRC_C                      += eth.c tcpip.c mac.c icmp.c ip.c arp.c tcp.c
+SRC_C 						+= nrf_radio.c nrf_ble.c
 #midware
 SRC_C						+= pinboard.c rfd.c
 #SRC_C                      += usbd.c cdc_acmd.c eth_phy.c tcpips.c macs.c routes.c arps.c ips.c icmps.c tcps.c

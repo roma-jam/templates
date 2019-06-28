@@ -20,12 +20,14 @@
 #include "../../rexos/userspace/pin.h"
 #include "../../rexos/userspace/flash.h"
 #include "../../rexos/userspace/rng.h"
+#include "../../rexos/userspace/storage.h"
 #include "../../rexos/midware/pinboard.h"
 #include "../../rexos/userspace/nrf/nrf_driver.h"
-#include "../../rexos/userspace/nrf/nrf_radio.h"
+#include "../../rexos/userspace/nrf/nrf_ble.h"
 #include "app_private.h"
 #include "button.h"
 #include "config.h"
+#include <string.h>
 
 void app();
 
@@ -33,7 +35,7 @@ const REX __APP = {
     //name
     "App main",
     //size
-    1024,
+    2048,
     //priority
     200,
     //flags
@@ -91,10 +93,16 @@ static inline void app_init(APP* app)
     app->timer = timer_create(0, HAL_APP);
     timer_start_ms(app->timer, TIMEOUT_VALUE);
 
-#if (0)
+#if (1)
     stat();
 #endif //
     printf("App init\n");
+
+#if (1)
+    printf("Flash size: %d KB\n", flash_get_size_bytes() >> 10);
+    printf("Flash page size: %d B\n", flash_get_page_size_bytes());
+    printf("HWID: %X\n", NRF_FICR->CONFIGID);
+#endif
 
 #if (NRF_DECODE_RESET)
     uint32_t rr = get_exo(HAL_REQ(HAL_POWER, NRF_POWER_GET_RESET_REASON), 0, 0, 0);
@@ -125,9 +133,9 @@ static inline void app_timeout(APP* app)
 
     /* send advertise packet */
     // RADIO
-#if (1)
+#if (0)
     gpio_set_pin(LED_PIN);
-    radio_listen_adv_channel(200, 0, 500);
+    ble_listen_adv_channel(200, 0, 500);
     gpio_reset_pin(LED_PIN);
 //    radio_send_adv(0, NULL, 0);
 #endif // RADIO
@@ -143,7 +151,7 @@ static inline void app_timeout(APP* app)
 #endif //
 
     // LED
-#if (0)
+#if (1)
     if(app->led_on)
         gpio_reset_pin(LED_PIN);
     else
@@ -152,6 +160,20 @@ static inline void app_timeout(APP* app)
     app->led_on = !app->led_on;
 #endif //
 
+}
+
+void print_buf(const char* s, uint8_t* buf, unsigned int size)
+{
+    printk("%s\n", s);
+    unsigned int i = 0;
+    for (i = 0; i < size; ++i)
+    {
+        printk("%02X ", buf[i]);
+        if ((i % 0x10) == 0xf)
+            printk("\n");
+    }
+    if (size % 0x10)
+        printk("\n");
 }
 
 void app()
@@ -167,7 +189,43 @@ void app()
 
 //    button_init(&app);
 
-    app.ble = ble_open();
+//    app.ble = ble_open();
+
+    // FLASH TEST
+#if (1)
+    uint8_t buf_test[1024] = { 0 };
+    unsigned int page_size = flash_get_page_size_bytes();
+    process_info();
+    sleep_ms(200);
+    storage_open(HAL_FLASH, KERNEL_HANDLE, process_get_current());
+
+
+    for(int i = 0; i < 1024; i++)
+    {
+        buf_test[i] = i;
+    }
+
+    IO* io = io_create(page_size);
+
+    flash_page_read(0, io, page_size);
+
+    print_buf("page 1", io_data(io), io->data_size);
+
+//    memcpy(io_data(io), buf_test, 1024);
+//
+//    flash_page_write(0, io);
+//
+//    flash_page_read(0, io, page_size);
+//
+//    print_buf("page 2", io_data(io), io->data_size);
+
+    io_destroy(io);
+
+    storage_close(HAL_FLASH, KERNEL_HANDLE, process_get_current());
+    sleep_ms(200);
+    process_info();
+#endif // FLASH
+
 
     // GPIO WAKEUP TEST
 #if (0)
