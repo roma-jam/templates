@@ -24,6 +24,7 @@
 #include "../../rexos/midware/pinboard.h"
 #include "../../rexos/userspace/nrf/nrf_driver.h"
 #include "../../rexos/userspace/nrf/nrf_ble.h"
+#include "../../rexos/kernel/dbg.h"
 #include "app_private.h"
 #include "button.h"
 #include "config.h"
@@ -35,7 +36,7 @@ const REX __APP = {
     //name
     "App main",
     //size
-    2048,
+    (1 * 1024),
     //priority
     200,
     //flags
@@ -193,23 +194,21 @@ void app()
 
     // FLASH TEST
 #if (1)
-    uint8_t buf_test[1024] = { 0 };
+//    uint8_t buf_test[1024] = { 0 };
     unsigned int page_size = flash_get_page_size_bytes();
     process_info();
     sleep_ms(200);
     storage_open(HAL_FLASH, KERNEL_HANDLE, process_get_current());
 
 
-    for(int i = 0; i < 1024; i++)
-    {
-        buf_test[i] = i;
-    }
+//    for(int i = 0; i < 1024; i++)
+//        buf_test[i] = i;
 
     IO* io = io_create(page_size);
 
     flash_page_read(0, io, page_size);
 
-    print_buf("page 1", io_data(io), io->data_size);
+    print_buf("page", io_data(io), io->data_size);
 
 //    memcpy(io_data(io), buf_test, 1024);
 //
