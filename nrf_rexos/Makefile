@@ -41,6 +41,7 @@ INCLUDE_FOLDERS            += $(LIB)
 INCLUDE_FOLDERS            += $(USERSPACE) $(USERSPACE)/core $(USERSPACE)/nrf
 #sys
 INCLUDE_FOLDERS            += $(REXOS)/kernel/drv $(REXOS)/kernel/nrf $(REXOS)/midware $(REXOS)/midware/rf
+INCLUDE_FOLDERS            += $(REXOS)/midware/fs
 
 INCLUDES                    = $(INCLUDE_FOLDERS:%=-I%)
 VPATH                      += $(INCLUDE_FOLDERS)
@@ -57,15 +58,18 @@ SRC_C						+= nrf_pin.c nrf_gpio.c nrf_power.c nrf_timer.c nrf_exo.c nrf_uart.c 
 SRC_C						+= nrf_wdt.c
 #SRC_C                      += stm32_pin.c stm32_gpio.c stm32_power.c stm32_timer.c stm32_rtc.c stm32_exo.c stm32_uart.c stm32_otg.c stm32_eth.c
 #userspace lib
-SRC_C						+= ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c power.c stream.c pin.c flash.c wdt.c storage.c
+SRC_C						+= ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c power.c stream.c pin.c flash.c wdt.c 
 #SRC_C                      += ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c usb.c power.c stream.c pin.c
 #SRC_C                      += eth.c tcpip.c mac.c icmp.c ip.c arp.c tcp.c
 SRC_C 						+= nrf_radio.c nrf_ble.c
+
+SRC_C						+= storage.c vfs.c utf.c
 #midware
-SRC_C						+= pinboard.c rfd.c
+SRC_C						+= fat16.c vfss.c ber.c
+SRC_C						+= pinboard.c rfd.c 
 #SRC_C                      += usbd.c cdc_acmd.c eth_phy.c tcpips.c macs.c routes.c arps.c ips.c icmps.c tcps.c
 #userspace lib
-SRC_C                      += app.c button.c
+SRC_C                      += app.c button.c fs.c
 
 OBJ                         = $(SRC_AS:%.S=%.o) $(SRC_C:%.c=%.o)
 #----------------------------------------------------------

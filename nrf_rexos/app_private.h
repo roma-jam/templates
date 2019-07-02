@@ -14,6 +14,7 @@
 #include "comm.h"
 #include "net.h"
 #include "button.h"
+#include "fs.h"
 
 typedef enum {
     APP_TIMER_BUTTON_DOUBLE_PRESS = 0x00,
@@ -25,6 +26,7 @@ typedef struct _APP {
     HANDLE timer;
     HANDLE ble;
     BUTTON button;
+    FS_TYPE fs;
 } APP;
 
 #endif // APP_PRIVATE_H

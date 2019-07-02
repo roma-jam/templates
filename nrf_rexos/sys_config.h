@@ -240,13 +240,22 @@
 //enable BER support
 #define VFS_BER                                             1
 //BER revision v2
-#define VFS_BER2                                            1
-#define VFS_BER_DEBUG_INFO                                  0
-#define VFS_BER_DEBUG_ERRORS                                0
+#define VFS_BER2                                            0
+
+#define VFS_BER_DEBUG_INFO                                  1
+#define VFS_BER_DEBUG_ERRORS                                1
 //RAW BER sectors only
 #define VFS_NO_FS                                           0
 //SFS/FAT16
-#define VFS_SFS                                             1
+#define VFS_SFS                                             0
+
+//align data sectors by cluster start offset (recommended to enable for flash storage)
+#define VFS_CLUSTER_ALIGN                                   1
+//update modify/access time (recommended to disable for flash storage)
+#define VFS_FILE_ATTRIBUTES_UPDATE                          0
+
+//01.09.2016 as default if not rtc used
+#define VFS_BASE_DATE                                       736207
 
 //---------------------------- CANopen server---------------------------------------------
 #define CO_PROCESS_SIZE                                    800

@@ -28,6 +28,7 @@
 #include "app_private.h"
 #include "button.h"
 #include "config.h"
+#include "fs.h"
 #include <string.h>
 
 void app();
@@ -36,7 +37,7 @@ const REX __APP = {
     //name
     "App main",
     //size
-    (1 * 1024),
+    (2 * 1024),
     //priority
     200,
     //flags
@@ -193,7 +194,7 @@ void app()
 //    app.ble = ble_open();
 
     // FLASH TEST
-#if (1)
+#if (0)
 //    uint8_t buf_test[1024] = { 0 };
     unsigned int page_size = flash_get_page_size_bytes();
     process_info();
@@ -206,16 +207,18 @@ void app()
 
     IO* io = io_create(page_size);
 
-    flash_page_read(0, io, page_size);
+    flash_page_read(NRF_FLASH_USER_CODE_SIZE, io, page_size);
+
+    printf("error: %d\n", get_last_error());
 
     print_buf("page", io_data(io), io->data_size);
 
 //    memcpy(io_data(io), buf_test, 1024);
-//
-//    flash_page_write(0, io);
-//
-//    flash_page_read(0, io, page_size);
-//
+
+//    flash_page_write(NRF_FLASH_USER_CODE_SIZE, io);
+
+//    flash_page_read(NRF_FLASH_USER_CODE_SIZE, io, page_size);
+
 //    print_buf("page 2", io_data(io), io->data_size);
 
     io_destroy(io);
@@ -225,6 +228,14 @@ void app()
     process_info();
 #endif // FLASH
 
+
+    // STORAGE TEST
+#if (1)
+    fs_init(&app);
+
+
+
+#endif //
 
     // GPIO WAKEUP TEST
 #if (0)
