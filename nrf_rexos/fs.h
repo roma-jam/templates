@@ -24,5 +24,6 @@ typedef struct {
 
 
 void fs_init(APP* app);
+void fs_deinit(APP* app);
 
 #endif /* FS_H_ */

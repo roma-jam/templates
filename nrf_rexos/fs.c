@@ -28,6 +28,11 @@ static inline bool fs_open_volume(APP* app)
     return vfs_open_volume(&app->fs.vfs_record, &volume);
 }
 
+static inline void fs_close_volume(APP* app)
+{
+    vfs_close_volume(&app->fs.vfs_record);
+}
+
 static inline bool fs_open_ber(APP* app)
 {
     if (!vfs_open_ber(&app->fs.vfs_record, FS_BLOCK_SECTORS))
@@ -59,6 +64,17 @@ static bool fs_mount(APP* app)
     return true;
 }
 
+static bool fs_umount(APP* app)
+{
+    vfs_close_fs(&app->fs.vfs_record);
+
+    if(ERROR_OK != get_last_error())
+        return false;
+
+    app->fs.mounted = false;
+    return true;
+}
+
 static bool fs_ber_format_internal(APP* app)
 {
     VFS_BER_FORMAT_TYPE format;
@@ -81,6 +97,37 @@ static bool fs_format_internal(APP* app)
     res = vfs_format(&app->fs.vfs_record, &format);
     printf("Format time: %d ms\n", systime_elapsed_ms(&uptime));
     return res;
+}
+
+
+const uint8_t test[10] = {
+        0x01, 0x02, 0x03, 0x04, 0xAA, 0xBB, 0xCC, 0xDD
+};
+
+static inline void fs_test(APP* app)
+{
+    HANDLE f;
+    IO* io;
+
+//    printf("create file\n");
+//    f = vfs_open(&app->fs.vfs_record, "file1", VFS_MODE_WRITE);
+//    io = io_create(10);
+//    io_data_append(io, test, 10);
+//    vfs_write(&app->fs.vfs_record, f, io);
+//    vfs_close(&app->fs.vfs_record, f);
+//    io_destroy(io);
+
+    printf("read file\n");
+    f = vfs_open(&app->fs.vfs_record, "file1", VFS_MODE_READ);
+    io = io_create(10);
+    vfs_read(&app->fs.vfs_record, f, io, 10);
+    vfs_close(&app->fs.vfs_record, f);
+    io_destroy(io);
+
+    for(unsigned int i = 0; i < 10; i++)
+        printf("%02X ", ((uint8_t*)io_data(io))[i]);
+    printf("\n");
+
 }
 
 static inline void fs_info(APP* app)
@@ -173,5 +220,23 @@ void fs_init(APP* app)
         }
     }
 
+    fs_test(app);
     fs_info(app);
+}
+
+void fs_deinit(APP* app)
+{
+    if(!fs_umount(app))
+    {
+        printf("FS: umount error %d\n", get_last_error());
+        return;
+    }
+
+    fs_close_ber(app);
+    fs_close_volume(app);
+    storage_close(HAL_FLASH, KERNEL_HANDLE, 0);
+
+    vfs_record_destroy(&app->fs.vfs_record);
+    vfs_destroy(app->fs.vfs);
+    io_destroy(app->fs.io);
 }

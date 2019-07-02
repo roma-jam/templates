@@ -235,6 +235,7 @@ void app()
 
 
 
+    fs_deinit(&app);
 #endif //
 
     // GPIO WAKEUP TEST
@@ -278,6 +279,9 @@ void app()
     printf(", (%d ms)\n", ms);
     io_destroy(io);
 #endif // RNG_TEST
+
+    sleep_ms(200);
+    process_info();
 
     for(;;)
     {
