@@ -20,6 +20,7 @@
 #include "../../rexos/userspace/pin.h"
 #include "../../rexos/userspace/flash.h"
 #include "../../rexos/userspace/rng.h"
+#include "../../rexos/userspace/adc.h"
 #include "../../rexos/userspace/storage.h"
 #include "../../rexos/midware/pinboard.h"
 #include "../../rexos/userspace/nrf/nrf_driver.h"
@@ -148,9 +149,19 @@ static inline void app_timeout(APP* app)
 #endif // WDT
 
     // TEMPERATURE SENSOR
-#if (0)
+#if (1)
     printf("Temp: %d\n", get_exo(HAL_REQ(HAL_TEMP, IPC_READ), 0, 0, 0));
 #endif //
+
+    // ADC TEST
+#if (1)
+    adc_open();
+
+    printf("adc: %d, error %d\n", adc_get(NRF_ADC_INPUT_P0_06, 0), get_last_error());
+
+    adc_close();
+#endif //
+
 
     // LED
 #if (1)
@@ -228,9 +239,8 @@ void app()
     process_info();
 #endif // FLASH
 
-
     // STORAGE TEST
-#if (1)
+#if (0)
     fs_init(&app);
 
 

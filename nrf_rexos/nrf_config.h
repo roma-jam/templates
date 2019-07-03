@@ -10,7 +10,7 @@
 #define NRF_CONFIG_H_
 
 //---------------------- fast drivers definitions -----------------------------------
-#define NRF_ADC_DRIVER                          0
+#define NRF_ADC_DRIVER                          1
 #define NRF_WDT_DRIVER                          0
 #define NRF_FLASH_DRIVER                        1
 #define NRF_SPI_DRIVER                          0
@@ -77,7 +77,11 @@
 #define HPET_TIMER                              TIMER_0
 #define HPET_CHANNEL                            TIMER_CC0
 //------------------------------- ADC ------------------------------------------------
-
+/* We can measure different voltage range on the input with adjusting the prescaling of the ADC */
+/* With e.g. 1/3 prescaling and VBG reference we have range 0V - 3.6V on the input */
+#define NRF_ADC_INPUT                           ADC_CONFIG_INPSEL_AnalogInputOneThirdPrescaling
+#define NRF_ADC_REFERENCE                       ADC_CONFIG_REFSEL_VBG
+#define NRF_ADC_RESOLUTION                      ADC_CONFIG_RES_10bit
 //------------------------------- WDT ------------------------------------------------
 #define WDT_TIMEOUT_S                           10
 //------------------------------ FLASH -----------------------------------------------
