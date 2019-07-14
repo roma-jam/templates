@@ -70,6 +70,7 @@ SRC_C						+= pinboard.c rfd.c
 #SRC_C                      += usbd.c cdc_acmd.c eth_phy.c tcpips.c macs.c routes.c arps.c ips.c icmps.c tcps.c
 #userspace lib
 SRC_C                      += app.c button.c fs.c
+SRC_C						+= lcd.c lcd_format.c
 
 OBJ                         = $(SRC_AS:%.S=%.o) $(SRC_C:%.c=%.o)
 #----------------------------------------------------------

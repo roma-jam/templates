@@ -30,6 +30,7 @@
 #include "button.h"
 #include "config.h"
 #include "fs.h"
+#include "lcd.h"
 #include <string.h>
 
 void app();
@@ -149,12 +150,12 @@ static inline void app_timeout(APP* app)
 #endif // WDT
 
     // TEMPERATURE SENSOR
-#if (1)
+#if (0)
     printf("Temp: %d\n", get_exo(HAL_REQ(HAL_TEMP, IPC_READ), 0, 0, 0));
 #endif //
 
     // ADC TEST
-#if (1)
+#if (0)
     adc_open();
 
     printf("adc: %d, error %d\n", adc_get(NRF_ADC_INPUT_P0_06, 0), get_last_error());
@@ -164,7 +165,7 @@ static inline void app_timeout(APP* app)
 
 
     // LED
-#if (1)
+#if (0)
     if(app->led_on)
         gpio_reset_pin(LED_PIN);
     else
@@ -197,10 +198,11 @@ void app()
     app_init(&app);
 
     pin_enable(LED_PIN, PIN_MODE_OUTPUT, PIN_PULL_NOPULL);
-    gpio_reset_pin(LED_PIN);
+    gpio_set_pin(LED_PIN);
     app.led_on = false;
 
-//    button_init(&app);
+    lcd_init(&app);
+    button_init(&app);
 
 //    app.ble = ble_open();
 
@@ -242,9 +244,6 @@ void app()
     // STORAGE TEST
 #if (0)
     fs_init(&app);
-
-
-
     fs_deinit(&app);
 #endif //
 

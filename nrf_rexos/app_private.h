@@ -25,6 +25,7 @@ typedef struct _APP {
     bool led_on;
     HANDLE timer;
     HANDLE ble;
+    HANDLE lcd;
     BUTTON button;
     FS_TYPE fs;
 } APP;
