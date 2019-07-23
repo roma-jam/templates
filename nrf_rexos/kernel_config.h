@@ -30,7 +30,7 @@
 //enable this only if you have problems with system timer. May decrease perfomance
 #define KERNEL_TIMER_DEBUG                          1
 //size of IPC queue per process
-#define KERNEL_IPC_COUNT                            7
+#define KERNEL_IPC_COUNT                            9
 //enable this only if you have problems with IPC oferflow.
 #define KERNEL_IPC_DEBUG                            1
 //Allows to debug critical kernel errors, but decreases perfomance

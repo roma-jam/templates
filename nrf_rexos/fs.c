@@ -101,7 +101,7 @@ static bool fs_format_internal(APP* app)
 
 
 const uint8_t test[10] = {
-        0x01, 0x02, 0x03, 0x04, 0xAA, 0xBB, 0xCC, 0xDD
+        0x01, 0x02, 0x03, 0x04, 0xAA, 0xBB, 0xCC, 0xDD, 0x1F, 0xF1
 };
 
 static inline void fs_test(APP* app)
@@ -124,7 +124,7 @@ static inline void fs_test(APP* app)
     vfs_close(&app->fs.vfs_record, f);
     io_destroy(io);
 
-    for(unsigned int i = 0; i < 10; i++)
+    for(unsigned int i = 0; i < io->data_size; i++)
         printf("%02X ", ((uint8_t*)io_data(io))[i]);
     printf("\n");
 

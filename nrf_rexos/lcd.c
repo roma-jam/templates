@@ -42,7 +42,7 @@ const REX __LCD = {
     //name
     "LCD",
     //size
-    1024,
+    700,
     //priority
     202,
     //flags
@@ -109,9 +109,9 @@ static inline void lcd_device_draw_block(LCD* lcd, unsigned int index, uint8_t d
 
 static inline void lcd_device_draw_char(LCD* lcd, unsigned int* index, unsigned char data)
 {
-    for(uint8_t i = 0; i < 5; i++)
+    for(uint8_t i = 0; i < 4; i++)
     {
-        lcd_device_draw_block(lcd, (*index)++, Font_5x8_mirror_Data[data][i], 0xFF);
+        lcd_device_draw_block(lcd, (*index)++, Font_4x8_mirror_Data[data][i], 0xFF);
         if ((*index) >= lcd->data_buf_size)
             (*index) = 0;
     }
@@ -268,7 +268,8 @@ void lcd_init(APP* app)
     ack(app->lcd, HAL_REQ(HAL_LCD, IPC_OPEN), 0, 0, 0);
     ack(app->lcd, HAL_REQ(HAL_LCD, LCD_INIT), LCD_WIDTH, LCD_HEIGHT, 0);
 
-    lcd_printf(app, 0, 1, "nRF");
+    lcd_printf(app, 0, 1, "nrf controller");
+//    lcd_printf(app, 0, 0, "was originally designed by the two German banking groups Sparkasse and Volksbanken und Raiffeisenbanken and German higher-leve");
 }
 
 void lcd_clear(APP* app)

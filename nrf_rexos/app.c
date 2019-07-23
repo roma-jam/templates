@@ -39,7 +39,7 @@ const REX __APP = {
     //name
     "App main",
     //size
-    (2 * 1024),
+    (1 * 1024),
     //priority
     200,
     //flags
@@ -155,10 +155,13 @@ static inline void app_timeout(APP* app)
 #endif //
 
     // ADC TEST
-#if (0)
+#if (1)
     adc_open();
 
-    printf("adc: %d, error %d\n", adc_get(NRF_ADC_INPUT_P0_06, 0), get_last_error());
+//    printf("adc: %d, error %d\n", adc_get(NRF_ADC_INPUT_P0_06, 0), get_last_error());
+//    printf("adc: %d mV\n", ADC2mV(adc_get(NRF_ADC_INPUT_P0_06, 0), 3600, 10));
+
+    lcd_printf(app, 2, 0, "battery: %d mV\n", ADC2mV(adc_get(NRF_ADC_INPUT_P0_06, 0) << 1, 3600, 10));
 
     adc_close();
 #endif //
@@ -201,10 +204,22 @@ void app()
     gpio_set_pin(LED_PIN);
     app.led_on = false;
 
-    lcd_init(&app);
     button_init(&app);
 
-//    app.ble = ble_open();
+    // STORAGE TEST
+#if (1)
+    fs_init(&app);
+    fs_deinit(&app);
+#endif //
+
+    // LCD
+#if (1)
+    lcd_init(&app);
+#endif // LCD
+
+#if (1)
+    app.ble = ble_open();
+#endif // BLE
 
     // FLASH TEST
 #if (0)
@@ -240,12 +255,6 @@ void app()
     sleep_ms(200);
     process_info();
 #endif // FLASH
-
-    // STORAGE TEST
-#if (0)
-    fs_init(&app);
-    fs_deinit(&app);
-#endif //
 
     // GPIO WAKEUP TEST
 #if (0)

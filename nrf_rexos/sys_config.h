@@ -242,7 +242,7 @@
 //BER revision v2
 #define VFS_BER2                                            0
 
-#define VFS_BER_DEBUG_INFO                                  1
+#define VFS_BER_DEBUG_INFO                                  0
 #define VFS_BER_DEBUG_ERRORS                                1
 //RAW BER sectors only
 #define VFS_NO_FS                                           0

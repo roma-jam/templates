@@ -47,7 +47,7 @@ static inline void button_blink(APP* app, uint8_t blink_time)
 static inline void button_press(APP* app, uint8_t button)
 {
 //    printf("BUTTON %d: press\n", button);
-    lcd_printf(app, 1, 0, "Button: P%d ", button);
+    lcd_printf(app, 1, 0, "button: P%d ", button);
     switch (button) {
         case BUTTON1_PIN:
             button_blink(app, 1);
