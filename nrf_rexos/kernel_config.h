@@ -13,7 +13,7 @@
 //enable kernel info. Disabling this you can save some flash size, but kernel will be much less verbose, especially on critical errors. Generally doesn't affect on perfomance
 #define KERNEL_DEBUG                                1
 //marks objects with magic in headers. Decrease perfomance on few tacts, but very useful for debug if you don't have MPU enabled
-#define KERNEL_MARKS                                0
+#define KERNEL_MARKS                                1
 //check range of dynamic objects in pools
 #define KERNEL_RANGE_CHECKING                       0
 //check kernel handles. Require few tacts, but making kernel calls much safer

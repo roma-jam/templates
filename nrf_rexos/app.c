@@ -97,12 +97,12 @@ static inline void app_init(APP* app)
     app->timer = timer_create(0, HAL_APP);
     timer_start_ms(app->timer, TIMEOUT_VALUE);
 
-#if (1)
+#if (0)
     stat();
 #endif //
-    printf("App init\n");
 
-#if (1)
+#if (0)
+    printf("App init\n");
     printf("Flash size: %d KB\n", flash_get_size_bytes() >> 10);
     printf("Flash page size: %d B\n", flash_get_page_size_bytes());
     printf("HWID: %X\n", NRF_FICR->CONFIGID);
@@ -126,6 +126,8 @@ static inline void app_init(APP* app)
     if(rr & POWER_RESETREAS_RESETPIN_Msk)
         printf(" RESET PIN\n");
 #endif // NRF_DECODE_RESET
+
+    sleep_ms(100);
 }
 
 static inline void app_timeout(APP* app)
@@ -137,9 +139,24 @@ static inline void app_timeout(APP* app)
 
     /* send advertise packet */
     // RADIO
-#if (0)
+#if (1)
+    int res = 0;
     gpio_set_pin(LED_PIN);
-    ble_listen_adv_channel(200, 0, 500);
+//    ble_listen_adv_channel(1024, 0, 500);
+    /* create IO */
+    IO* io = io_create(sizeof(RADIO_STACK) + 256); // 254 is max pkt
+    /* begin rx */
+    for(uint8_t n = 0; n < 1; n++)
+    {
+        res = radio_rx_sync(HAL_RF, KERNEL_HANDLE, 0, io, 500);
+        printf("rx: %d\n");
+        if(res > 0)
+        {
+//            ble_debug_adv_common(io);
+        }
+    }
+
+    io_destroy(io);
     gpio_reset_pin(LED_PIN);
 //    radio_send_adv(0, NULL, 0);
 #endif // RADIO
@@ -155,13 +172,12 @@ static inline void app_timeout(APP* app)
 #endif //
 
     // ADC TEST
-#if (1)
+#if (0)
     adc_open();
 
 //    printf("adc: %d, error %d\n", adc_get(NRF_ADC_INPUT_P0_06, 0), get_last_error());
 //    printf("adc: %d mV\n", ADC2mV(adc_get(NRF_ADC_INPUT_P0_06, 0), 3600, 10));
-
-    lcd_printf(app, 2, 0, "battery: %d mV\n", ADC2mV(adc_get(NRF_ADC_INPUT_P0_06, 0) << 1, 3600, 10));
+    lcd_printf(app, 1, 0, "battery: %d mV\n", ADC2mV(adc_get(NRF_ADC_INPUT_P0_06, 0) << 1, 3600, 10));
 
     adc_close();
 #endif //
@@ -193,6 +209,7 @@ void print_buf(const char* s, uint8_t* buf, unsigned int size)
         printk("\n");
 }
 
+
 void app()
 {
     APP app;
@@ -204,22 +221,33 @@ void app()
     gpio_set_pin(LED_PIN);
     app.led_on = false;
 
+    // BUTTON
+#if (0)
     button_init(&app);
+#endif // BUTTON
 
     // STORAGE TEST
-#if (1)
+#if (0)
     fs_init(&app);
     fs_deinit(&app);
 #endif //
 
     // LCD
-#if (1)
+#if (0)
     lcd_init(&app);
 #endif // LCD
 
-#if (1)
-    app.ble = ble_open();
+#if (0)
+//    app.ble = ble_open();
+    app.radio = radio_open("BLE", RADIO_MODE_BLE_1Mbit);
+    /* set channel */
+    radio_set_channel(BLE_ADV_CHANNEL_39);
 #endif // BLE
+
+    // RADIO
+#if (1)
+    app.radio = radio_open("RADIO stack", RADIO_MODE_RF_250Kbit);
+#endif // RADIO
 
     // FLASH TEST
 #if (0)

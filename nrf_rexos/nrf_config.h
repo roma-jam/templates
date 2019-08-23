@@ -24,6 +24,11 @@
 //------------------------------ CORE ------------------------------------------------
 
 
+//------------------------------ PINBOARD --------------------------------------------
+// If pin connected to VCC - set HIGH_LO_ACTIVE flag to 0
+// If pin connected to GND - set HIGH_LO_ACTIVE flag to 1
+#define PINBOARD_HIGH_LOW_ACTIVE                1
+
 //------------------------------- UART -----------------------------------------------
 //disable for some memory saving if not blocking IO is required
 #define UART_IO_MODE_SUPPORT                    0
@@ -41,7 +46,7 @@
 #define LFCLK_SOURCE                            CLOCK_LFCLKSRC_SRC_Synth
 
 //save few bytes here
-#define NRF_DECODE_RESET                        1
+#define NRF_DECODE_RESET                        0
 /* keep SRAM during system OFF */
 #define NRF_SRAM_RETENTION_ENABLE               0
 /* POWER CONFIG for SRAM blocks */

@@ -61,7 +61,8 @@ SRC_C						+= nrf_wdt.c nrf_adc.c
 SRC_C						+= ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c power.c stream.c pin.c flash.c wdt.c
 #SRC_C                      += ipc.c io.c process.c stdio.c stdlib.c systime.c time.c uart.c usb.c power.c stream.c pin.c
 #SRC_C                      += eth.c tcpip.c mac.c icmp.c ip.c arp.c tcp.c
-SRC_C 						+= nrf_radio.c nrf_ble.c
+SRC_C 						+= nrf_radio.c 
+SRC_C						+= nrf_ble.c
 
 SRC_C						+= storage.c vfs.c utf.c
 #midware
