@@ -142,17 +142,16 @@ static inline void app_timeout(APP* app)
 #if (1)
     int res = 0;
     gpio_set_pin(LED_PIN);
-//    ble_listen_adv_channel(1024, 0, 500);
     /* create IO */
     IO* io = io_create(sizeof(RADIO_STACK) + 256); // 254 is max pkt
     /* begin rx */
     for(uint8_t n = 0; n < 1; n++)
     {
         res = radio_rx_sync(HAL_RF, KERNEL_HANDLE, 0, io, 500);
-        printf("rx: %d\n");
+//        printf("rx: %d\n", res);
         if(res > 0)
         {
-//            ble_debug_adv_common(io);
+            ble_debug_adv_common(io);
         }
     }
 
@@ -237,15 +236,33 @@ void app()
     lcd_init(&app);
 #endif // LCD
 
-#if (0)
+#if (1)
 //    app.ble = ble_open();
     app.radio = radio_open("BLE", RADIO_MODE_BLE_1Mbit);
     /* set channel */
     radio_set_channel(BLE_ADV_CHANNEL_39);
+    /* listen adv */
+#if (0)
+    /* create IO */
+    IO* io = io_create(sizeof(RADIO_STACK) + 256); // 254 is max pkt
+    /* begin rx */
+    unsigned int res = 0;
+    for(uint8_t n = 0; n < 1; n++)
+    {
+        res = radio_rx_sync(HAL_RF, KERNEL_HANDLE, 0, io, 500);
+        printf("rx: %d\n", res);
+        if(res > 0)
+        {
+            ble_debug_adv_common(io);
+        }
+    }
+
+    io_destroy(io);
+#endif //
 #endif // BLE
 
     // RADIO
-#if (1)
+#if (0)
     app.radio = radio_open("RADIO stack", RADIO_MODE_RF_250Kbit);
 #endif // RADIO
 
