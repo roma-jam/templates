@@ -144,16 +144,40 @@ static inline void app_timeout(APP* app)
     gpio_set_pin(LED_PIN);
     /* create IO */
     IO* io = io_create(sizeof(RADIO_STACK) + 256); // 254 is max pkt
+
+    // RX
+#if (1)
     /* begin rx */
     for(uint8_t n = 0; n < 1; n++)
     {
-        res = radio_rx_sync(HAL_RF, KERNEL_HANDLE, 0, io, 500);
+        res = radio_rx_sync(HAL_RF, KERNEL_HANDLE, 0, io, 3000);
 //        printf("rx: %d\n", res);
         if(res > 0)
         {
+#if (1)
             ble_debug_adv_common(io);
+#else
+            printf("DATA: ");
+            for(int i = 0; i < io->data_size; i++)
+                printf("%02X ", ((uint8_t*)(io_data(io)))[i]);
+            printf("\n");
+#endif //
         }
     }
+#else
+    uint8_t buf[8] = {
+            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08
+    };
+
+    io_data_append(io, buf, 8);
+
+    if(radio_tx_sync(HAL_RF, KERNEL_HANDLE, 0, io, 7000))
+    {
+        printf("tx ok\n");
+    }
+    else
+        printf("tx failure\n");
+#endif //
 
     io_destroy(io);
     gpio_reset_pin(LED_PIN);
