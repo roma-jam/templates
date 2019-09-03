@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include "sys.h"
 #include "board/ST/stm32_power.h"
+#include "board/ST/stm32_pin.h"
 
 //main
 extern void board_init();

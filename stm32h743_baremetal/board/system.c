@@ -15,6 +15,7 @@
 void system_early_init()
 {
     //
+    return;
 }
 
 

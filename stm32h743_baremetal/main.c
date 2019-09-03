@@ -21,6 +21,10 @@ void main(void)
     system.reboot = false;
     board_init();
 
+    gpio_enable(B0, GPIO_MODE_OUT);
+    gpio_enable(B7, GPIO_MODE_OUT);
+    gpio_enable(B14, GPIO_MODE_OUT);
+
 #if (DFU_DEBUG)
     board_dbg_init();
     printf("STM32H743 bare matal, CPU %d MHz\n", power_get_core_clock() / 1000000);
@@ -40,11 +44,18 @@ void main(void)
 //        printf("%#x\n", c++);
 //        printf("%#x\n", c);
 //        printf("LED blink\n");
-//        delay_ms(500);
-//        if(pin_get(C13))
-//            pin_reset(C13);
-//        else
-//            pin_set(C13);
+        delay_ms(500);
+        if(pin_get(B7))
+        {
+            pin_reset(B7);
+            pin_set(B14);
+        }
+        else
+        {
+            pin_set(B7);
+            pin_reset(B14);
+        }
+
         /* main cycle */
     }
 }

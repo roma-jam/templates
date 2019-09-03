@@ -36,6 +36,10 @@ const GPIO_TypeDef_P GPIO[8] =                                  {GPIOA, GPIOB, G
 const GPIO_TypeDef_P GPIO[4] =                                  {GPIOA, GPIOB, GPIOC, GPIOD};
 static const unsigned int GPIO_POWER_PINS[GPIO_COUNT] =         {0, 1, 2, 3};
 #define GPIO_POWER_PORT                                         RCC->AHBENR
+#elif defined(STM32H7)
+const GPIO_TypeDef_P GPIO[GPIO_COUNT] =                         {GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF, GPIOG, GPIOH, GPIOI, GPIOJ, GPIOK};
+static const unsigned int GPIO_POWER_PINS[GPIO_COUNT] =         {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+#define GPIO_POWER_PORT                                         RCC->AHB4ENR
 #endif
 
 #if defined(STM32F1)
@@ -52,8 +56,6 @@ void pin_enable(PIN pin, STM32_GPIO_MODE mode, bool pullup)
     GPIO_CR_SET(pin, mode);
     GPIO_ODR_SET(pin, pullup);
 }
-
-
 #else
 #define GPIO_SET_MODE(pin, mode)                                GPIO[GPIO_PORT(pin)]->MODER &= ~(3 << (GPIO_PIN(pin) * 2)); \
                                                                 GPIO[GPIO_PORT(pin)]->MODER |= ((mode) << (GPIO_PIN(pin) * 2))
@@ -127,7 +129,7 @@ void gpio_enable(unsigned int pin, GPIO_MODE mode)
 
 void pin_set(PIN pin)
 {
-#if defined(STM32F1) || defined(STM32L1) || defined (STM32L0) || defined(STM32F0)
+#if defined(STM32F1) || defined(STM32L1) || defined (STM32L0) || defined(STM32F0) || defined(STM32H7)
     GPIO[GPIO_PORT(pin)]->BSRR = 1 << GPIO_PIN(pin);
 #else
     GPIO[GPIO_PORT(pin)]->BSRRL = 1 << GPIO_PIN(pin);
@@ -136,8 +138,10 @@ void pin_set(PIN pin)
 
 void pin_reset(PIN pin)
 {
-#if defined(STM32F1) || defined(STM32L1) || defined (STM32L0) || defined(STM32F0)
+#if defined(STM32F1) || defined(STM32L1) || defined (STM32L0) || defined(STM32F0) || defined(STM32H7)
     GPIO[GPIO_PORT(pin)]->BSRR = 1 << (GPIO_PIN(pin) + 16);
+#elif defined(STM32H7)
+
 #else
     GPIO[GPIO_PORT(pin)]->BSRRH = 1 << GPIO_PIN(pin);
 #endif

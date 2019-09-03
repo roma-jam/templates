@@ -1,4 +1,4 @@
-OPTIMIZATION            = s
+OPTIMIZATION            = 0
 
 #----------------------------------------------------------
 #PATH must be set to CodeSourcery/bin
@@ -38,10 +38,11 @@ LINKER_SCRIPT				= core/script.ld
 #core-dependent part
 SRC_AS                      = cortexm.S
 SRC_C						+= system.c board.c
-SRC_C						+= stm32_power.c 
-SRC_C 						+= stm32_pin.c stm32_uart.c
+#SRC_C						+= stm32_power.c 
+#SRC_C 						+= stm32_uart.c
+SRC_C 						+= stm32_pin.c 
 SRC_C                       += main.c 
-SRC_C						+= dbg.c printf.c
+#SRC_C						+= dbg.c printf.c
 
 OBJ                         = $(SRC_AS:%.S=%.o) $(SRC_C:%.c=%.o)
 #----------------------------------------------------------
