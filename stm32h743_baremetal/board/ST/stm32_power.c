@@ -10,6 +10,8 @@
 #include "stm32_power.h"
 #include "stm32_config.h"
 
+#include "CMSIS/Device/ST/STM32H7xx/Include/stm32h743xx.h"
+
 #if defined(STM32F1)
 #define MAX_APB2                             72000000
 #define MAX_APB1                             36000000
@@ -341,9 +343,26 @@ static inline int stm32_power_get_pll_clock()
 }
 #endif //STM32F0
 
+#if defined(STM32H7)
+static inline int stm32_power_get_pll1_clock()
+{
+//    int pllsrc = HSI_VALUE / 2;
+//#if (HSE_VALUE)
+//    if (RCC->CFGR & (1 << 16))
+//        pllsrc = HSE_VALUE;
+//#endif
+//    return (pllsrc / ((RCC->CFGR2 & 0xf) + 1)) * (((RCC->CFGR >> 18) & 0xf) + 2);
+    return 0;
+}
+#endif // STM32H7
+
 unsigned int power_get_core_clock()
 {
+#if defined(STM32H7)
+    switch (RCC->CFGR & (3 << 3))
+#else
     switch (RCC->CFGR & (3 << 2))
+#endif //
     {
     case RCC_CFGR_SWS_HSI:
         return HSI_VALUE;
@@ -356,8 +375,17 @@ unsigned int power_get_core_clock()
     case RCC_CFGR_SWS_HSE:
         return HSE_VALUE;
         break;
+#if defined(STM32H7)
+    case RCC_CFGR_SWS_CSI:
+        break;
+    case RCC_CFGR_SWS_PLL1:
+        return stm32_power_get_pll1_clock();
+        break;
+
+#else
     case RCC_CFGR_SWS_PLL:
         return stm32_power_get_pll_clock();
+#endif //
     }
     return 0;
 }
@@ -365,29 +393,56 @@ unsigned int power_get_core_clock()
 int get_ahb_clock()
 {
     int div = 1;
+#if defined(STM32H7)
+
+#else
     if (RCC->CFGR & (1 << 7))
         div = 1 << (((RCC->CFGR >> 4) & 7) + 1);
     if (div >= 32)
         div <<= 1;
+#endif //
     return power_get_core_clock() / div;
 }
+
+#if (MAX_APB4)
+int get_apb4_clock()
+{
+//    int div = 1;
+//    if (RCC->CFGR & (1 << (PPRE2_POS + 2)))
+//        div = 1 << (((RCC->CFGR >> PPRE2_POS) & 3) + 1);
+//    return get_ahb_clock() /div;
+    return 0;
+}
+#endif // MAX_APB4
+
+#if (MAX_APB3)
+int get_apb3_clock()
+{
+//    int div = 1;
+//    if (RCC->CFGR & (1 << (PPRE2_POS + 2)))
+//        div = 1 << (((RCC->CFGR >> PPRE2_POS) & 3) + 1);
+//    return get_ahb_clock() /div;
+    return 0;
+}
+#endif // MAX_APB3
 
 #if (MAX_APB2)
 int get_apb2_clock()
 {
     int div = 1;
-    if (RCC->CFGR & (1 << (PPRE2_POS + 2)))
-        div = 1 << (((RCC->CFGR >> PPRE2_POS) & 3) + 1);
+//    if (RCC->CFGR & (1 << (PPRE2_POS + 2)))
+//        div = 1 << (((RCC->CFGR >> PPRE2_POS) & 3) + 1);
     return get_ahb_clock() /div;
 }
 #endif //MAX_APB2
 
 int get_apb1_clock()
 {
-    int div = 1;
-    if (RCC->CFGR & (1 << (PPRE1_POS + 2)))
-        div = 1 << (((RCC->CFGR >> PPRE1_POS) & 3) + 1);
-    return get_ahb_clock() / div;
+//    int div = 1;
+//    if (RCC->CFGR & (1 << (PPRE1_POS + 2)))
+//        div = 1 << (((RCC->CFGR >> PPRE1_POS) & 3) + 1);
+//    return get_ahb_clock() / div;
+    return 0;
 }
 
 #if defined(STM32F1)
@@ -461,13 +516,23 @@ unsigned int power_get_clock(POWER_CLOCK_TYPE clock_type)
         res = get_ahb_clock();
         break;
     case POWER_CLOCK_APB1:
+        res = get_apb1_clock();
+        break;
 #if (MAX_APB2)
+    case POWER_CLOCK_APB2:
         res = get_apb2_clock();
         break;
 #endif //MAX_APB2
-    case POWER_CLOCK_APB2:
-        res = get_apb1_clock();
+#if (MAX_APB3)
+    case POWER_CLOCK_APB3:
+        res = get_apb2_clock();
         break;
+#endif //MAX_APB3
+#if (MAX_APB4)
+    case POWER_CLOCK_APB4:
+        res = get_apb4_clock();
+        break;
+#endif //MAX_APB4
 #if defined(STM32F1)
     case POWER_CLOCK_ADC:
         res = get_adc_clock();
@@ -505,6 +570,10 @@ static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
         core_clock = HSE_VALUE;
         break;
 #endif
+
+#if defined(STM32H7)
+
+#else
     case STM32_CLOCK_SOURCE_PLL:
         if (stm32_power_pll_on(pll_src))
         {
@@ -513,6 +582,7 @@ static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
             break;
         }
         //follow down
+#endif
     default:
         sw = RCC_CFGR_SW_HSI;
         core_clock = HSI_VALUE;
@@ -520,13 +590,29 @@ static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
 
     //setup bases
     //AHB. Can operates at maximum clock
+#if (MAX_APB4)
+    // TODO:
+#endif // MAX_APB4
+
+#if (MAX_APB3)
+    // TODO:
+#endif // MAX_APB3
 
 #if (MAX_APB2)
     //APB2
+#if(defined STM32H7)
+    // TODO:
+#else
     RCC->CFGR = (RCC->CFGR & ~(7 << PPRE2_POS)) | (stm32_power_get_bus_prescaller(core_clock, MAX_APB2) << PPRE2_POS);
+#endif //
 #endif //MAX_APB2
+
     //APB1
+#if(defined STM32H7)
+    // TODO:
+#else
     RCC->CFGR = (RCC->CFGR & ~(7 << PPRE1_POS)) | (stm32_power_get_bus_prescaller(core_clock, MAX_APB1) << PPRE1_POS);
+#endif //
 
 #if defined(STM32F1)
 #if (STM32_ADC_DRIVER)
@@ -609,8 +695,6 @@ void decode_reset_reason(CORE* core)
 }
 #endif //STM32_DECODE_RESET
 
-#include "CMSIS/Device/ST/STM32H7xx/Include/stm32h743xx.h"
-
 void power_init()
 {
 #if defined(STM32H7)
@@ -689,5 +773,5 @@ void power_init()
     decode_reset_reason(core);
 #endif //STM32_DECODE_RESET
 
-    stm32_power_set_clock_source(STM32_CLOCK_SOURCE_PLL);
+    stm32_power_set_clock_source(STM32_CLOCK_SOURCE_HSI);
 }

@@ -78,7 +78,7 @@ static const USART_TypeDef_P UART_REGS[UARTS_COUNT]=        {USART1, USART2, USA
 #endif
 #endif // STM32H7
 
-#if defined(STM32L0) || defined(STM32F0)
+#if defined(STM32L0) || defined(STM32F0) || defined(STM32H7)
 #define USART_SR_TXE        USART_ISR_TXE
 #define USART_SR_TC         USART_ISR_TC
 #define USART_SR_PE         USART_ISR_PE
@@ -124,7 +124,7 @@ void board_dbg_init()
     UART_REGS[UART]->CR2 = 0;
     UART_REGS[UART]->CR3 = 0;
 
-    mantissa = (25 * power_get_clock(POWER_CLOCK_APB1)) / (4 * (UART_BAUD));
+    mantissa = (25 * power_get_clock(POWER_CLOCK_APB2)) / (4 * (UART_BAUD));
     fraction = ((mantissa % 100) * 8 + 25)  / 50;
     mantissa = mantissa / 100;
     UART_REGS[UART]->BRR = (mantissa << 4) | fraction;
@@ -140,19 +140,17 @@ void board_dbg(const char *const buf, unsigned int size)
     for(i = 0; i < size; ++i)
     {
 #if defined(STM32L0) || defined(STM32F0)
-        while ((UART_REGS[UART]->ISR & USART_ISR_TXE) == 0) {}
-        UART_REGS[UART]->TDR = buf[i];
+        while ((SR(UART) & USART_ISR_TXE) == 0) {}
 #elif defined(STM32H7)
-        while ((UART_REGS[UART]->ISR & USART_ISR_TXE_TXFNF_Msk) == 0) {}
-        UART_REGS[UART]->TDR = buf[i];
+        while ((SR(UART) & USART_ISR_TXE_TXFNF_Msk) == 0) {}
 #else
-        while ((UART_REGS[UART]->SR & USART_SR_TXE) == 0) {}
-        UART_REGS[UART]->DR = buf[i];
+        while ((SR(UART) & USART_SR_TXE) == 0) {}
 #endif
+        TXC(UART, buf[i]);
     }
 #if defined(STM32L0) || defined(STM32F0) || defined(STM32H7)
-    while ((UART_REGS[UART]->ISR & USART_ISR_TC) == 0) {}
+    while ((SR(UART) & USART_ISR_TC) == 0) {}
 #else
-    while ((UART_REGS[UART]->SR & USART_SR_TC) == 0) {}
+    while ((SR(UART) & USART_SR_TC) == 0) {}
 #endif
 }
