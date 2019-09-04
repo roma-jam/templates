@@ -84,6 +84,12 @@ typedef enum {
     STM32_CLOCK_SOURCE_PLL,
 } STM32_CLOCK_SOURCE_TYPE;
 
+
+#if defined(STM32H7)
+#define HSI_MAX_VALUE                   8
+const uint8_t HSI_DIV_VALUE[9] = { 0, 0, 1, 1, 2, 2, 2, 2, 3};
+#endif // STM32H7
+
 #if defined(STM32F100)
 static bool stm32_power_pll_on(STM32_CLOCK_SOURCE_TYPE src)
 {
@@ -344,15 +350,71 @@ static inline int stm32_power_get_pll_clock()
 #endif //STM32F0
 
 #if defined(STM32H7)
-static inline int stm32_power_get_pll1_clock()
+static inline bool stm32_power_pll_on()
 {
-//    int pllsrc = HSI_VALUE / 2;
-//#if (HSE_VALUE)
-//    if (RCC->CFGR & (1 << 16))
-//        pllsrc = HSE_VALUE;
-//#endif
-//    return (pllsrc / ((RCC->CFGR2 & 0xf) + 1)) * (((RCC->CFGR >> 18) & 0xf) + 2);
-    return 0;
+    /* disable PLL1 */
+    RCC->CR &= ~(RCC_CR_PLL1ON_Msk);
+    /* wait PLL disabled */
+    while (RCC->CR & RCC_CR_PLLRDY) {}
+    /* set VCO range */
+    RCC->PLLCFGR |= (0 << RCC_PLLCFGR_PLL1VCOSEL_Pos);
+#if (HSE_VALUE)
+    RCC->PLLCKSELR |= RCC_PLLCKSELR_PLLSRC_HSE;
+#else
+    /* HSI selected as default after reset */
+    RCC->PLLCKSELR |= RCC_PLLCKSELR_PLLSRC_HSI;
+#endif //
+
+    /* enable dividers */
+    RCC->PLLCFGR |= (1 << RCC_PLLCFGR_DIVP1EN_Pos) |
+                    (1 << RCC_PLLCFGR_DIVQ1EN_Pos) |
+                    (1 << RCC_PLLCFGR_DIVR1EN_Pos);
+
+    /* write new values */
+    RCC->PLLCKSELR &= ~(RCC_PLLCKSELR_DIVM1_Msk);
+    RCC->PLLCKSELR |= (PLL_DIVM << RCC_PLLCKSELR_DIVM1_Pos);
+
+    /* flush divider value */
+    RCC->PLL1DIVR &= ~(RCC_PLL1DIVR_R1_Msk) | ~(RCC_PLL1DIVR_Q1_Msk) |
+            ~(RCC_PLL1DIVR_P1_Msk) | ~(RCC_PLL1DIVR_N1_Msk);
+
+    RCC->PLL1DIVR |= ((PLL_DIVR - 1) << RCC_PLL1DIVR_R1_Pos) |
+                    ((PLL_DIVQ - 1) << RCC_PLL1DIVR_Q1_Pos) |
+                    ((PLL_DIVP - 1) << RCC_PLL1DIVR_P1_Pos) |
+                    ((PLL_DIVN - 1) << RCC_PLL1DIVR_N1_Pos);
+
+    /* Disable PLLFRACN */
+    RCC->PLLCFGR &= ~(RCC_PLLCFGR_PLL1FRACEN_Msk);
+    RCC->PLL1FRACR = 0 << RCC_PLL1FRACR_FRACN1_Pos;
+
+    /* RGE */
+    RCC->PLLCFGR |= (2 << RCC_PLLCFGR_PLL1RGE_Pos); /* 4 - 8 MHz */
+
+    /* Enable PLL1FRACN */
+    RCC->PLLCFGR |= RCC_PLLCFGR_PLL1FRACEN_Msk;
+
+    /* turn PLL on */
+    RCC->CR |= RCC_CR_PLLON;
+    while (!(RCC->CR & RCC_CR_PLLRDY)) {}
+    return true;
+}
+
+static inline int stm32_power_get_pll_clock()
+{
+    int pllsrc = HSI_VALUE;
+    unsigned int mul = ((RCC->PLL1DIVR & RCC_PLL1DIVR_N1_Msk) >> RCC_PLL1DIVR_N1_Pos) + 1;
+    unsigned int div1 = ((RCC->PLLCKSELR & RCC_PLLCKSELR_DIVM1_Msk) >> RCC_PLLCKSELR_DIVM1_Pos);
+    unsigned int div2 = ((RCC->PLL1DIVR & RCC_PLL1DIVR_P1_Msk) >> RCC_PLL1DIVR_P1_Pos) + 1;
+
+#if (HSE_VALUE)
+    if(RCC->CFGR & RCC_CFGR_SW_HSE)
+        pllsrc = HSE_VALUE;
+#else
+    /* HSI DIVIDER */
+//    pllsrc >>= ((RCC->CR & RCC_CR_HSIDIV_Msk) >> RCC_CR_HSIDIV_Pos);
+#endif //
+    pllsrc = ((pllsrc / div1) * mul) / div2;
+    return pllsrc;
 }
 #endif // STM32H7
 
@@ -365,7 +427,13 @@ unsigned int power_get_core_clock()
 #endif //
     {
     case RCC_CFGR_SWS_HSI:
-        return HSI_VALUE;
+#if defined(STM32H7)
+        /* divider */
+        if(RCC->CR & RCC_CR_HSIDIV_Msk)
+            return (HSI_VALUE >> ((RCC->CR & RCC_CR_HSIDIV_Msk) >> RCC_CR_HSIDIV_Pos));
+        else
+#endif
+            return HSI_VALUE;
         break;
 #if defined(STM32L0) || defined(STM32L1)
     case RCC_CFGR_SWS_MSI:
@@ -379,7 +447,7 @@ unsigned int power_get_core_clock()
     case RCC_CFGR_SWS_CSI:
         break;
     case RCC_CFGR_SWS_PLL1:
-        return stm32_power_get_pll1_clock();
+        return stm32_power_get_pll_clock();
         break;
 
 #else
@@ -394,7 +462,6 @@ int get_ahb_clock()
 {
     int div = 1;
 #if defined(STM32H7)
-
 #else
     if (RCC->CFGR & (1 << 7))
         div = 1 << (((RCC->CFGR >> 4) & 7) + 1);
@@ -430,9 +497,9 @@ int get_apb3_clock()
 int get_apb2_clock()
 {
     int div = 1;
-//    if (RCC->CFGR & (1 << (PPRE2_POS + 2)))
-//        div = 1 << (((RCC->CFGR >> PPRE2_POS) & 3) + 1);
-    return get_ahb_clock() /div;
+    if(RCC->D2CFGR & (1 << 6))
+        div = 1 << (((RCC->D2CFGR >> RCC_D2CFGR_D2PPRE1_Pos) & 3) + 1);
+    return get_ahb_clock() / div;
 }
 #endif //MAX_APB2
 
@@ -547,6 +614,9 @@ unsigned int power_get_clock(POWER_CLOCK_TYPE clock_type)
 static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
 {
     unsigned int sw, core_clock, pll_src;
+#if defined(STM32H7)
+    uint8_t div = 0;
+#endif //STM32H7
     pll_src = STM32_CLOCK_SOURCE_HSI;
 
 #if (HSE_VALUE)
@@ -572,36 +642,63 @@ static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
 #endif
 
 #if defined(STM32H7)
+//    case STM32_CLOCK_SOURCE_PLL2:
+//        if (stm32_power_pll_on(pll_src))
+//        {
+//            sw = RCC_CFGR_SW_PLL;
+//            core_clock = stm32_power_get_pll_clock(pll_src);
+//        }
+//        break;
+//    case STM32_CLOCK_SOURCE_PLL3:
+//        if (stm32_power_pll_on(pll_src))
+//        {
+//            sw = RCC_CFGR_SW_PLL1;
+//            core_clock = stm32_power_get_pll_clock(pll_src);
+//        }
+//        break;
+#endif // STM32H7
 
-#else
     case STM32_CLOCK_SOURCE_PLL:
-        if (stm32_power_pll_on(pll_src))
+        if (stm32_power_pll_on())
         {
+#if defined(STM32H7)
+            sw = RCC_CFGR_SW_PLL1;
+#else
             sw = RCC_CFGR_SW_PLL;
+#endif
             core_clock = stm32_power_get_pll_clock();
             break;
         }
         //follow down
-#endif
     default:
         sw = RCC_CFGR_SW_HSI;
+#if (HSI_DIVIDER)
+        if(HSI_DIVIDER > HSI_MAX_VALUE)
+            div = HSI_DIV_VALUE[HSI_MAX_VALUE];
+        else
+            div = HSI_DIV_VALUE[HSI_DIVIDER];
+
+        core_clock = HSI_VALUE >> div;
+        RCC->CR |= (div << RCC_CR_HSIDIV_Pos);
+#else
         core_clock = HSI_VALUE;
+#endif //
     }
 
     //setup bases
     //AHB. Can operates at maximum clock
 #if (MAX_APB4)
-    // TODO:
+    // TODO: set APB5 prescaler
 #endif // MAX_APB4
 
 #if (MAX_APB3)
-    // TODO:
+    // TODO: set APB3 prescaler
 #endif // MAX_APB3
 
 #if (MAX_APB2)
     //APB2
 #if(defined STM32H7)
-    // TODO:
+    // TODO: set APB2 prescaler
 #else
     RCC->CFGR = (RCC->CFGR & ~(7 << PPRE2_POS)) | (stm32_power_get_bus_prescaller(core_clock, MAX_APB2) << PPRE2_POS);
 #endif //
@@ -609,7 +706,7 @@ static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
 
     //APB1
 #if(defined STM32H7)
-    // TODO:
+    // TODO: set APB1 prescaler
 #else
     RCC->CFGR = (RCC->CFGR & ~(7 << PPRE1_POS)) | (stm32_power_get_bus_prescaller(core_clock, MAX_APB1) << PPRE1_POS);
 #endif //
@@ -655,7 +752,11 @@ static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
 
     //switch to source
     RCC->CFGR |= sw;
+#if defined(STM32H7)
+    while (((RCC->CFGR >> 3) & 3) != sw) {}
+#else
     while (((RCC->CFGR >> 2) & 3) != sw) {}
+#endif //
     __NOP();
     __NOP();
 }
@@ -773,5 +874,5 @@ void power_init()
     decode_reset_reason(core);
 #endif //STM32_DECODE_RESET
 
-    stm32_power_set_clock_source(STM32_CLOCK_SOURCE_HSI);
+    stm32_power_set_clock_source(STM32_CLOCK_SOURCE_PLL);
 }

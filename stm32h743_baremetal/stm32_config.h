@@ -18,6 +18,8 @@
 #define STM32_DECODE_RESET                      0
 //0 meaning HSI. If not defined, 25MHz will be defined by default by ST lib
 #define HSI_VALUE                               64000000
+// HSI divider, 0 - default 64 MHZ, max divider - 8
+#define HSI_DIVIDER                             0
 #define HSE_VALUE                               0
 #define HSE_RTC_DIV                             0
 #define HSE_BYPASS                              0
@@ -39,6 +41,15 @@
 #define PLL_M                                   0
 #define PLL_N                                   0
 #define PLL_P                                   0
+
+// STM32H7
+/* Prescaler for PLL1 */
+#define PLL_DIVM                                16
+/* Multiplication factor for PLL1 VCO */
+#define PLL_DIVN                                200
+#define PLL_DIVP                                4
+#define PLL_DIVQ                                5
+#define PLL_DIVR                                3
 
 #define STANDBY_WKUP                            0
 

@@ -10,7 +10,7 @@
 
 void board_init()
 {
-//    power_init();
+    power_init();
 //    flash_init();
 }
 
