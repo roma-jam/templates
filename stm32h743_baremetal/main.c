@@ -19,6 +19,10 @@ void main(void)
 //    uint8_t c = 15;
     SYSTEM system;
     system.reboot = false;
+
+    delay_ms(999);
+
+
     board_init();
 
     gpio_enable(B0, GPIO_MODE_OUT);
@@ -30,7 +34,6 @@ void main(void)
     printf("STM32H743 bare matal, CPU %d MHz\n", power_get_core_clock() / 1000000);
 #endif // DFU_DEBUG
 
-    delay_ms(999);
 
     // Enable LED
 //    gpio_enable(C13, GPIO_MODE_OUT);
