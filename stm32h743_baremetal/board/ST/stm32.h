@@ -903,8 +903,31 @@
 #if defined(STM32H742xG)
 #define SRAM_SIZE           0x100000
 #elif defined(STM32H743xG) || defined(STM32H743xI) || defined(STM32H753xI)
-//1M
-#define SRAM_SIZE           0x108000
+//128K Data Time Critical SRAM
+#define SRAM_DTCM_SIZE      0x20000
+
+//512K AXI SRAM
+#define SRAM_AXI_BASE       0x24000000
+#define SRAM_AXI_SIZE       0x80000
+
+//128K
+#define SRAM1_BASE          0x30000000
+#define SRAM1_SIZE          0x20000
+//128K
+#define SRAM2_BASE          0x30020000
+#define SRAM2_SIZE          0x20000
+//32K
+#define SRAM3_BASE          0x30040000
+#define SRAM3_SIZE          0x8000
+//64k
+#define SRAM4_BASE          0x38000000
+#define SRAM4_SIZE          0x10000
+//4K
+#define SRAM_BACKUP_BASE    0x38800000
+#define SRAM_BACKUP_SIZE    0x1000
+
+#define SRAM_SIZE           SRAM_DTCM_SIZE
+
 #endif
 
 #if defined(STM32H742xG) || defined(STM32H743xG) || defined(STM32H743xI) || defined(STM32H753xI)

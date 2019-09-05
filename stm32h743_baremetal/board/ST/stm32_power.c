@@ -731,20 +731,17 @@ static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
     //setup bases
     //AHB. Can operates at maximum clock
 #if (MAX_AHB)
-    uint8_t ahb_pre = stm32_power_get_ahb_bus_prescaller(core_clock, MAX_AHB);
     RCC->D1CFGR = (RCC->D1CFGR & ~(1 << 3))
             | (stm32_power_get_ahb_bus_prescaller(core_clock, MAX_AHB) << RCC_D1CFGR_HPRE_Pos);
 #endif //
 
 #if (MAX_APB4)
     // TODO: set APB4 prescaler
-    uint8_t apb4_pre = stm32_power_get_bus_prescaller(core_clock, MAX_APB4);
     RCC->D3CFGR = (RCC->D3CFGR & (1 << 6))
             | (stm32_power_get_bus_prescaller(core_clock, MAX_APB4) << RCC_D3CFGR_D3PPRE_Pos);
 #endif // MAX_APB4
 
 #if (MAX_APB3)
-    uint8_t apb3_pre = stm32_power_get_bus_prescaller(core_clock, MAX_APB3);
     RCC->D1CFGR = (RCC->D1CFGR & ~(1 << 6))
             | (stm32_power_get_bus_prescaller(core_clock, MAX_APB3) << RCC_D1CFGR_D1PPRE_Pos);
 #endif // MAX_APB3
@@ -752,7 +749,6 @@ static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
 #if (MAX_APB2)
     //APB2
 #if(defined STM32H7)
-    uint8_t apb2_pre = stm32_power_get_bus_prescaller(core_clock, MAX_APB2);
     RCC->D2CFGR = (RCC->D2CFGR & ~(1 << 10))
             | (stm32_power_get_bus_prescaller(core_clock, MAX_APB2) << RCC_D2CFGR_D2PPRE2_Pos);
 #else
@@ -762,7 +758,6 @@ static void stm32_power_set_clock_source(STM32_CLOCK_SOURCE_TYPE src)
 
     //APB1
 #if(defined STM32H7)
-    uint8_t apb1_pre = stm32_power_get_bus_prescaller(core_clock, MAX_APB1);
     RCC->D2CFGR = (RCC->D2CFGR & ~(1 << 6))
                 | (stm32_power_get_bus_prescaller(core_clock, MAX_APB1) << RCC_D2CFGR_D2PPRE1_Pos);
 #else
