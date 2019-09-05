@@ -11,7 +11,7 @@
 
 //------------------------------ board ------------------------------------------------
 #define CORTEX_M7
-#define SP_PTR                                      0x20001000
+#define SP_PTR                                      0x20010000
 #define DELAY_COEF_MS                               10000
 #define DELAY_COEF_US                               10
 

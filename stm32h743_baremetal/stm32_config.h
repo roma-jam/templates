@@ -46,7 +46,7 @@
 /* Prescaler for PLL1 */
 #define PLL_DIVM                                4
 /* Multiplication factor for PLL1 VCO */
-#define PLL_DIVN                                420
+#define PLL_DIVN                                400
 #define PLL_DIVP                                2
 #define PLL_DIVQ                                10
 #define PLL_DIVR                                6

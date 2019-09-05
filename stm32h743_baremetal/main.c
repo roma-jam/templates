@@ -20,6 +20,9 @@ void main(void)
     SYSTEM system;
     system.reboot = false;
 
+//    SCB_EnableICache();
+//    SCB_EnableDCache();
+
     delay_ms(999);
 
 
@@ -33,6 +36,10 @@ void main(void)
     board_dbg_init();
     printf("STM32H743 bare matal, CPU %d MHz\n", power_get_core_clock() / 1000000);
 #endif // DFU_DEBUG
+
+    uint32_t rev = (DBGMCU->IDCODE & DBGMCU_IDCODE_REV_ID_Msk) >> DBGMCU_IDCODE_REV_ID_Pos;
+    uint32_t dev = (DBGMCU->IDCODE & DBGMCU_IDCODE_DEV_ID_Msk) >> DBGMCU_IDCODE_DEV_ID_Pos;
+    printf("rev: %X, dev: %X\n", rev, dev);
 
 
     // Enable LED
