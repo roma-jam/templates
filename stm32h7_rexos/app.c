@@ -44,6 +44,7 @@ const REX __APP = {
     app
 };
 
+const uint8_t led[3] = { B0, B7, B14 };
 
 //static inline void stat()
 //{
@@ -87,14 +88,21 @@ static inline void app_init(APP* app)
 {
     app_setup_dbg();
 
-//    app->timer = timer_create(0, HAL_APP);
-//    timer_start_ms(app->timer, TIMEOUT_VALUE);
+    app->timer = timer_create(0, HAL_APP);
+    timer_start_ms(app->timer, TIMEOUT_VALUE);
 }
 
-//static inline void app_timeout(APP* app)
-//{
-//    timer_start_ms(app->timer, TIMEOUT_VALUE);
-//}
+static inline void app_timeout(APP* app)
+{
+    timer_start_ms(app->timer, TIMEOUT_VALUE);
+
+    gpio_reset_pin(led[app->led_num]);
+    app->led_num++;
+    if(app->led_num >= 3)
+        app->led_num = 0;
+    gpio_set_pin(led[app->led_num]);
+    app->led_on = !app->led_on;
+}
 
 void app()
 {
@@ -103,12 +111,17 @@ void app()
 
     app_init(&app);
 
-//    pin_enable(LED_PIN, PIN_MODE_OUTPUT, PIN_PULL_NOPULL);
-//    gpio_set_pin(LED_PIN);
-//    app.led_on = false;
+    printf("MCU %dMHz\n", power_get_core_clock() / 1000000);
 
-//    sleep_ms(200);
-//    process_info();
+    gpio_enable_pin(led[0], GPIO_MODE_OUT);
+    gpio_enable_pin(led[1], GPIO_MODE_OUT);
+    gpio_enable_pin(led[2], GPIO_MODE_OUT);
+
+    app.led_on = false;
+    app.led_num = 0;
+
+    sleep_ms(200);
+    process_info();
 
     for(;;)
     {
@@ -116,7 +129,7 @@ void app()
         switch (HAL_GROUP(ipc.cmd))
         {
         case HAL_APP:
-//            app_timeout(&app);
+            app_timeout(&app);
           break;
         default:
             error(ERROR_NOT_SUPPORTED);

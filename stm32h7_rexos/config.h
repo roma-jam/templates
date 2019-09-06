@@ -9,9 +9,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define TIMEOUT_VALUE                               1000
+#define TIMEOUT_VALUE                               250
 
-#define LED_PIN                                     P7
+#define LED_PIN                                     B0
 
 #define BUTTON1_PIN                                 P9
 #define BUTTON2_PIN                                 P8

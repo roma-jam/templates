@@ -18,6 +18,7 @@ typedef enum {
 } APP_TIMER;
 
 typedef struct _APP {
+    uint8_t led_num;
     bool led_on;
     HANDLE timer;
 } APP;
