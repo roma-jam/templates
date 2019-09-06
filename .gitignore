@@ -19,3 +19,5 @@ stm32f100_CoCo/.settings/
 stm32f100_CoCo/output/
 stm32h743_baremetal/.settings/
 stm32h743_baremetal/build/
+stm32h7_rexos/build/
+stm32h7_rexos/.settings/
