@@ -36,7 +36,7 @@ VPATH                      += $(INCLUDE_FOLDERS)
 #----------------------------------------------------------
 LINKER_SCRIPT				= core/script.ld
 #core-dependent part
-SRC_AS                      = cortexm.S
+SRC_AS                      = cortexm.S svc.S
 SRC_C						+= system.c board.c
 SRC_C						+= stm32_power.c 
 SRC_C 						+= stm32_uart.c

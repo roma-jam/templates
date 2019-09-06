@@ -10,6 +10,9 @@
   .equ   ICER0,                 0xe000e180
   .equ   ICPR0,                 0xe000e280
 
+  .equ   LR_TO_PROCESS_PSP,     0xfffffffd
+  .equ   LR_TO_PROCESS_MSP,     0xfffffff9
+
 /* exported global constant and functions */
     .global delay_ms
     .global delay_us
@@ -130,9 +133,38 @@ loop_us:
     bx      lr
 
 /*********************** exception vectors handlers *********************/
-        .thumb_func
+.macro exception_enter
+    mov   r0, lr
+    movs  r1, #0
+    subs  r1, r1, #3
+    cmp   r0, r1
+    bne   1f
+    mrs   r1, psp
+    b     2f
+1:
+    mrs   r1, msp
+2:
+.endm
+
+    .thumb_func
 HardFault_Handler:
     b   on_hard_fault
+
+    .thumb_func
+SVC_Handler:
+    //mrs   r0, psp                       @ move psp value to r0
+    mrs     r0,msp                      @ move msp value to r0
+    ldmia r0, {r0-r3}                   @ store multiply register from r0 to r3
+    bl    svc                           @ call c handler
+
+    //return to thread mode
+#if defined(CORTEX_M0)
+    ldr   r0, =LR_TO_PROCESS_MSP        @ recover stack pointer to msp
+    bx    r0                            @ return
+#else
+    ldr   pc, SW
+SW: .word LR_TO_PROCESS_MSP
+#endif
 
 #if defined(CORTEX_M3) || defined(CORTEX_M4) || defined(CORTEX_M7)
     .thumb_func
@@ -158,6 +190,5 @@ weak_vector   NMI_Handler
 #if defined(CORTEX_M3) || defined(CORTEX_M4) || defined(CORTEX_M7)
 weak_vector   DebugMon_Handler
 #endif
-weak_vector   SVC_Handler
 weak_vector   PendSV_Handler
 weak_vector   SysTick_Handler

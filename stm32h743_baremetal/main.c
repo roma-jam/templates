@@ -14,6 +14,7 @@
 #include "dbg.h"
 #endif
 
+extern void svc_call(unsigned int num, unsigned int param1, unsigned int param2, unsigned int param3);
 
 bool is_address_valid(volatile const uint32_t *address)
 {
@@ -55,8 +56,8 @@ void main(void)
     SYSTEM system;
     system.reboot = false;
 
-    SCB_EnableICache();
-    SCB_EnableDCache();
+//    SCB_EnableICache();
+//    SCB_EnableDCache();
 
     delay_ms(999);
 
@@ -76,7 +77,8 @@ void main(void)
     uint32_t dev = (DBGMCU->IDCODE & DBGMCU_IDCODE_DEV_ID_Msk) >> DBGMCU_IDCODE_DEV_ID_Pos;
     printf("rev: %X, dev: %X\n", rev, dev);
 
-
+    // SRAM
+#if (0)
     /* check RAM access */
     uint32_t addr = SRAM_BASE;
     uint32_t sram_size = 0;
@@ -154,12 +156,14 @@ void main(void)
     while (is_address_valid((const uint32_t*)addr));
 
     printf("SRAM BACKUP: %d KB\n", sram_size >> 10);
-
+#endif //
     // Enable LED
 //    gpio_enable(C13, GPIO_MODE_OUT);
 //    pin_reset(C13);
 
 //    printf("%#x\n", c);
+
+    __enable_irq();
 
     while(!system.reboot)
     {
@@ -167,7 +171,11 @@ void main(void)
 //        printf("%#x\n", c++);
 //        printf("%#x\n", c);
 //        printf("LED blink\n");
-        delay_ms(500);
+        delay_ms(5000);
+
+        printf("svc call\n");
+        svc_call(15, 0xF00000AC, 0x80000001, 0xFFFF);
+
         if(pin_get(B7))
         {
             pin_reset(B7);

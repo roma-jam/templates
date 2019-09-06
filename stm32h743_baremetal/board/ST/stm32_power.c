@@ -927,5 +927,5 @@ void power_init()
     decode_reset_reason(core);
 #endif //STM32_DECODE_RESET
 
-    stm32_power_set_clock_source(STM32_CLOCK_SOURCE_PLL);
+    stm32_power_set_clock_source(STM32_CLOCK_SOURCE_HSI);
 }

@@ -19,7 +19,7 @@
 //0 meaning HSI. If not defined, 25MHz will be defined by default by ST lib
 #define HSI_VALUE                               64000000
 // HSI divider, 0 - default 64 MHZ, max divider - 8
-#define HSI_DIVIDER                             4
+#define HSI_DIVIDER                             0
 #define HSE_VALUE                               0
 #define HSE_RTC_DIV                             0
 #define HSE_BYPASS                              0

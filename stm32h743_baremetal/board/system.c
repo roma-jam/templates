@@ -51,6 +51,13 @@ void on_usage_fault()
     while(1);
 }
 
+void svc(unsigned int num, unsigned int param1, unsigned int param2, unsigned int param3)
+{
+#if (DFU_DEBUG)
+    printf("svc, num %d, p1: %#X, p2: %#X, p3:%#X\n", num, param1, param2, param3);
+#endif // CPU_DEBUG
+}
+
 void irq_handler()
 {
 #if (DFU_DEBUG)
