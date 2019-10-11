@@ -13,7 +13,7 @@
 
 #include "board/nrf/nrf.h"
 
-#if defined(NRF51)
+#if defined(NRF51) || defined(NRF52)
 #include "board/nrf/nrf_power.h"
 #include "board/nrf/nrf_pin.h"
 #include "board/nrf/nrf_radio.h"

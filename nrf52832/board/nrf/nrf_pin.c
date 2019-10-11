@@ -7,6 +7,17 @@
 
 #include "nrf_pin.h"
 
+#include "core/nrf/NRF52/nrf52.h"
+
+#if defined(NRF51)
+/* no need to change */
+//#define NRF_GPIO          NRF_GPIO
+#endif // NRF51
+
+#if defined(NRF52)
+#define NRF_GPIO            NRF_P0
+#endif // NRF52
+
 void pin_enable(PIN pin, PIN_MODE mode, PIN_PULL pull)
 {
     NRF_GPIO->PIN_CNF[pin] = (GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos) | \

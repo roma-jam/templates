@@ -24,7 +24,7 @@
 //------------------------------ UART ------------------------------------------
 //Use UART as default stdio
 #define UART                        UART_0
-#define UART_TX_PIN                 P9
+#define UART_TX_PIN                 P28
 #define UART_RX_PIN                 P11
 
 #define UART_BAUD                   UART_BAUDRATE_BAUDRATE_Baud115200

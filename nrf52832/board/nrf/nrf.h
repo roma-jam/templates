@@ -103,16 +103,17 @@
 #include "nrf51.h"
 #include "nrf51_bitfields.h"
 #include "nrf51_deprecated.h"
-#elif defined(NRF52)
+#endif // NRF51
+
+#if defined(NRF52)
 #undef SRAM_BASE
 #undef FLASH_BASE
+
 #include "nrf52_config.h"
 
 #include "nrf52.h"
 #include "nrf52_bitfields.h"
-#else
-#error "Device family not defined."
-#endif /* NRF51 */
+#endif /* NRF52 */
 
 #endif //!defined(LDS) && !defined(__ASSEMBLER__)
 

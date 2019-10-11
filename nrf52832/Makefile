@@ -1,6 +1,6 @@
 PLATFORM 				= nrf
 
-OPTIMIZATION            = s
+OPTIMIZATION            = 0
 CURRENT_DATE			= $(shell date +"%D %T")
 
 #----------------------------------------------------------
@@ -39,12 +39,12 @@ VPATH                      += $(INCLUDE_FOLDERS)
 #core-dependent part
 SRC_AS                      = startup_cortexm.S cortexm.S
 
-#SRC_C						= nrf_power.c nrf_pin.c nrf_uart.c nrf_radio.c
+SRC_C						= nrf_power.c nrf_pin.c nrf_uart.c
 
 SRC_C						+= board.c system.c
 
 SRC_C                       += main.c
-#SRC_C 						+= dbg.c printf.c 
+SRC_C 						+= dbg.c printf.c 
 
 OBJ                         = $(SRC_AS:%.S=%.o) $(SRC_C:%.c=%.o)
 #----------------------------------------------------------

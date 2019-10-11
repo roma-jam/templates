@@ -14,6 +14,6 @@
 #define DELAY_COEF_US                               7
 
 //------------------------------ debug ------------------------------------------------
-#define DFU_DEBUG                                   0
+#define DFU_DEBUG                                   1
 
 #endif /* CONFIG_H_ */

@@ -21,3 +21,5 @@ stm32h743_baremetal/.settings/
 stm32h743_baremetal/build/
 stm32h7_rexos/build/
 stm32h7_rexos/.settings/
+nrf52832/build/
+nrf52832/.settings/
