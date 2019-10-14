@@ -10,16 +10,16 @@
 #define NRF_CONFIG_H_
 
 //---------------------- fast drivers definitions -----------------------------------
-#define NRF_ADC_DRIVER                          1
+#define NRF_ADC_DRIVER                          0
 #define NRF_WDT_DRIVER                          0
-#define NRF_FLASH_DRIVER                        1
+#define NRF_FLASH_DRIVER                        0
 #define NRF_SPI_DRIVER                          0
 #define NRF_UART_DRIVER                         1
-#define NRF_RTC_DRIVER                          1
+#define NRF_RTC_DRIVER                          0
 #define NRF_TIMER_DRIVER                        1
 #define NRF_RF_DRIVER                           1
-#define NRF_RNG_DRIVER                          1
-#define NRF_TEMP_DRIVER                         1
+#define NRF_RNG_DRIVER                          0
+#define NRF_TEMP_DRIVER                         0
 #define NRF_AES_ECB_DRIVER                      0
 //------------------------------ CORE ------------------------------------------------
 
@@ -93,9 +93,9 @@
 //protect user code if VFS is allocated on flash. Must be page-aligned (512)
 #define NRF_FLASH_USER_CODE_SIZE                (128 * 1024)
 //------------------------------ DEBUG -----------------------------------------------
-#define DBG_CONSOLE                                 UART_0
-#define DBG_CONSOLE_BAUD                            115200
-#define DBG_CONSOLE_TX_PIN                          P20
+#define DBG_CONSOLE                              UART_0
+#define DBG_CONSOLE_BAUD                         115200
+#define DBG_CONSOLE_TX_PIN                       P28
 
-#define TEST_ROUNDS                                 10000
+#define TEST_ROUNDS                              10000
 #endif /* NRF_CONFIG_H_ */

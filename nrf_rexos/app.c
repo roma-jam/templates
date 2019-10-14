@@ -89,15 +89,12 @@ static inline void app_setup_dbg()
 
 static inline void app_init(APP* app)
 {
-//    gpio_enable_pin(P28, GPIO_MODE_OUT);
-//    gpio_reset_pin(P28);
-
     app_setup_dbg();
 
     app->timer = timer_create(0, HAL_APP);
     timer_start_ms(app->timer, TIMEOUT_VALUE);
 
-#if (0)
+#if (1)
     stat();
 #endif //
 
@@ -130,6 +127,46 @@ static inline void app_init(APP* app)
     sleep_ms(100);
 }
 
+const uint8_t __ADV[] = {
+        0x40, // TYPE
+        0x16, // LEN
+        0x31, // MAC
+        0x32,
+        0x33,
+        0x34,
+        0x35,
+        0x36,
+        0x0E, // LEN
+        BLE_ADV_TYPE_NAME,
+        'R',
+        'o',
+        'm',
+        'a',
+        'J',
+        'a',
+        'm',
+        ' ',
+        'n',
+        'R',
+        'F',
+        '5',
+        '2',
+        0x00
+};
+
+const uint8_t __TEST_PKT[] = {
+        0xAA, // TYPE
+        0x55, // LEN
+        0x31, // MAC
+        0x32,
+        0x33,
+        0x34,
+        0x35,
+        0x36,
+        0x37, // LEN
+        0x38, // TYPE: DEVICE NAME
+};
+
 static inline void app_timeout(APP* app)
 {
     /* go sleep */
@@ -141,17 +178,15 @@ static inline void app_timeout(APP* app)
     // RADIO
 #if (1)
     int res = 0;
-    gpio_set_pin(LED_PIN);
     /* create IO */
     IO* io = io_create(sizeof(RADIO_STACK) + 256); // 254 is max pkt
 
     // RX
-#if (1)
+#if (0)
     /* begin rx */
     for(uint8_t n = 0; n < 1; n++)
     {
         res = radio_rx_sync(HAL_RF, KERNEL_HANDLE, 0, io, 3000);
-//        printf("rx: %d\n", res);
         if(res > 0)
         {
 #if (1)
@@ -165,22 +200,19 @@ static inline void app_timeout(APP* app)
         }
     }
 #else
-    uint8_t buf[8] = {
-            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08
-    };
 
-    io_data_append(io, buf, 8);
+    io_data_append(io, __ADV, sizeof(__ADV));
+//    io_data_append(io, __TEST_PKT, sizeof(__TEST_PKT));
 
     if(radio_tx_sync(HAL_RF, KERNEL_HANDLE, 0, io, 7000))
     {
-        printf("tx ok\n");
+        printf("tx (%d) ok\n", io->data_size);
     }
     else
-        printf("tx failure\n");
+        printf("tx failure, %d\n", get_last_error());
 #endif //
 
     io_destroy(io);
-    gpio_reset_pin(LED_PIN);
 //    radio_send_adv(0, NULL, 0);
 #endif // RADIO
 
@@ -207,7 +239,7 @@ static inline void app_timeout(APP* app)
 
 
     // LED
-#if (0)
+#if (1)
     if(app->led_on)
         gpio_reset_pin(LED_PIN);
     else
@@ -242,7 +274,7 @@ void app()
 
     pin_enable(LED_PIN, PIN_MODE_OUTPUT, PIN_PULL_NOPULL);
     gpio_set_pin(LED_PIN);
-    app.led_on = false;
+    app.led_on = true;
 
     // BUTTON
 #if (0)
@@ -378,9 +410,9 @@ void app()
         case HAL_APP:
             app_timeout(&app);
           break;
-        case HAL_PINBOARD:
-            button_request(&app, &ipc);
-            break;
+//        case HAL_PINBOARD:
+//            button_request(&app, &ipc);
+//            break;
         default:
             error(ERROR_NOT_SUPPORTED);
             break;
