@@ -9,13 +9,19 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define TIMEOUT_VALUE                               1000
+#define TIMEOUT_VALUE                               250
 
-#define LED_PIN                                     P7
+//NRF51 BOARD
+//#define LED_PIN                                     P0_7
 
-#define BUTTON1_PIN                                 P9
-#define BUTTON2_PIN                                 P8
-#define BUTTON3_PIN                                 P10
+//#define LED_PIN                                     P0_6
+#define LED_PIN                                     P0_8
+//#define LED_PIN                                     P0_12
+//#define LED_PIN                                     P1_9
+
+#define BUTTON1_PIN                                 P0_9
+#define BUTTON2_PIN                                 P0_8
+#define BUTTON3_PIN                                 P0_10
 
 
 //#define BUTTON_FLAGS   (PINBOARD_FLAG_DOWN_EVENT | PINBOARD_FLAG_UP_EVENT |   PINBOARD_FLAG_PULL | PINBOARD_FLAG_INVERTED)
@@ -39,12 +45,12 @@
 #define LCD_STR_WIDTH                               16
 
 /* PINS */
-#define LCD_RESET_PIN                               P0
-#define LCD_CE_PIN                                  P1
-#define LCD_DC_PIN                                  P2
-#define LCD_DIN_PIN                                 P3
-#define LCD_SCLK_PIN                                P4
-#define LCD_BCKLT_PIN                               P5
+#define LCD_RESET_PIN                               P0_0
+#define LCD_CE_PIN                                  P0_1
+#define LCD_DC_PIN                                  P0_2
+#define LCD_DIN_PIN                                 P0_3
+#define LCD_SCLK_PIN                                P0_4
+#define LCD_BCKLT_PIN                               P0_5
 
 //plus space for BER cache in SRAM. Generally 1 block size - 2kb/4kb
 #define VFS_PROCESS_SIZE                                    (1500 + 4096)

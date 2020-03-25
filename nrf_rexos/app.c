@@ -25,6 +25,7 @@
 #include "../../rexos/midware/pinboard.h"
 #include "../../rexos/userspace/nrf/nrf_driver.h"
 #include "../../rexos/userspace/nrf/nrf_ble.h"
+#include "../../rexos/userspace/nrf/radio.h"
 #include "../../rexos/kernel/dbg.h"
 #include "app_private.h"
 #include "button.h"
@@ -150,7 +151,12 @@ const uint8_t __ADV[] = {
         'R',
         'F',
         '5',
+#if defined(NRF51)
+        '1',
+#endif // NRF51
+#if defined(NRF52)
         '2',
+#endif // NRF52
         0x00
 };
 
@@ -199,8 +205,11 @@ static inline void app_timeout(APP* app)
 #endif //
         }
     }
-#else
+#endif // RX
 
+    // TX
+    io_reset(io);
+#if (1)
     io_data_append(io, __ADV, sizeof(__ADV));
 //    io_data_append(io, __TEST_PKT, sizeof(__TEST_PKT));
 
@@ -210,7 +219,7 @@ static inline void app_timeout(APP* app)
     }
     else
         printf("tx failure, %d\n", get_last_error());
-#endif //
+#endif // TX
 
     io_destroy(io);
 //    radio_send_adv(0, NULL, 0);

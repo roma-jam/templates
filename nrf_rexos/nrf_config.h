@@ -17,7 +17,7 @@
 #define NRF_UART_DRIVER                         1
 #define NRF_RTC_DRIVER                          0
 #define NRF_TIMER_DRIVER                        1
-#define NRF_RF_DRIVER                           1
+#define NRF_RADIO_DRIVER                        1
 #define NRF_RNG_DRIVER                          0
 #define NRF_TEMP_DRIVER                         0
 #define NRF_AES_ECB_DRIVER                      0
@@ -95,7 +95,11 @@
 //------------------------------ DEBUG -----------------------------------------------
 #define DBG_CONSOLE                              UART_0
 #define DBG_CONSOLE_BAUD                         115200
-#define DBG_CONSOLE_TX_PIN                       P28
+
+//NRF51 BOARD
+//#define DBG_CONSOLE_TX_PIN                       P0_20
+//NRFNRF52840 DONGLE
+#define DBG_CONSOLE_TX_PIN                       P0_31
 
 #define TEST_ROUNDS                              10000
 #endif /* NRF_CONFIG_H_ */
