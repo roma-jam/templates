@@ -23,3 +23,5 @@ stm32h7_rexos/build/
 stm32h7_rexos/.settings/
 nrf52832/build/
 nrf52832/.settings/
+stm32f100_rexos/build/
+stm32f100_rexos/.settings/
